@@ -1,0 +1,80 @@
+//go:build darwin
+
+package forwarder
+
+import (
+	"fmt"
+	"net"
+	"os/exec"
+	"strings"
+)
+
+func addScopedHostRoute(ip, iface string) error {
+	gateway, err := scopedGateway("default", iface)
+	if err != nil {
+		return err
+	}
+	if gateway == nil && !isTunnelInterface(iface) {
+		return fmt.Errorf("no gateway for physical iface %s", iface)
+	}
+	return addHostRoute(ip, iface, gateway)
+}
+
+func addHostRoute(ip, iface string, gateway net.IP) error {
+	if net.ParseIP(ip).To4() == nil {
+		return nil
+	}
+	var args []string
+	if gateway != nil && gateway.To4() != nil && !gateway.IsUnspecified() {
+		args = []string{"add", "-host", ip, gateway.String()}
+	} else {
+		args = []string{"add", "-host", ip, "-interface", iface}
+	}
+	out, err := exec.Command("route", args...).CombinedOutput()
+	if err != nil && strings.Contains(string(out), "File exists") {
+		if delErr := exec.Command("route", "delete", "-host", ip).Run(); delErr != nil {
+			return fmt.Errorf("route delete %s (before retry): %w", ip, delErr)
+		}
+		out, err = exec.Command("route", args...).CombinedOutput()
+	}
+	if err != nil {
+		return fmt.Errorf("route %v: %s: %w", args, out, err)
+	}
+	return nil
+}
+
+func deleteHostRoute(ip string) error {
+	exec.Command("route", "delete", "-host", ip).Run() //nolint:errcheck
+	return nil
+}
+
+func scopedGateway(ip, iface string) (net.IP, error) {
+	out, err := exec.Command("route", "-n", "get", ip, "-ifscope", iface).CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("route get %s ifscope %s: %s: %w", ip, iface, out, err)
+	}
+	for _, line := range strings.Split(string(out), "\n") {
+		line = strings.TrimSpace(line)
+		if !strings.HasPrefix(line, "gateway:") {
+			continue
+		}
+		gw := net.ParseIP(strings.TrimSpace(strings.TrimPrefix(line, "gateway:")))
+		if gw == nil {
+			return nil, nil
+		}
+		return gw, nil
+	}
+	return nil, nil
+}
+
+func isTunnelInterface(iface string) bool {
+	return strings.HasPrefix(iface, "utun") ||
+		strings.HasPrefix(iface, "tun") ||
+		strings.HasPrefix(iface, "tap")
+}
+
+// AddScopedHostRoute adds a /32 host route for ip via iface,
+// bypassing the TUN (used for WireGuard server endpoint).
+func AddScopedHostRoute(ip, iface string) error {
+	return addScopedHostRoute(ip, iface)
+}

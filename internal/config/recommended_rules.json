@@ -1,0 +1,3075 @@
+[
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "safebrowsing.urlsec.qq.com",
+    "policy": "DIRECT",
+    "id": "rec_1"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "safebrowsing.googleapis.com",
+    "policy": "DIRECT",
+    "id": "rec_2"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "apple.com",
+    "policy": "DIRECT",
+    "id": "rec_3"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "icloud.com",
+    "policy": "DIRECT",
+    "id": "rec_4"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "icloud-content.com",
+    "policy": "DIRECT",
+    "id": "rec_5"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "apple-cloudkit.com",
+    "policy": "DIRECT",
+    "id": "rec_6"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "apple-mapkit.com",
+    "policy": "DIRECT",
+    "id": "rec_7"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "me.com",
+    "policy": "DIRECT",
+    "id": "rec_8"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "aaplimg.com",
+    "policy": "DIRECT",
+    "id": "rec_9"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mzstatic.com",
+    "policy": "DIRECT",
+    "id": "rec_10"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "itunes.apple.com",
+    "policy": "DIRECT",
+    "id": "rec_11"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "cdn20.com",
+    "policy": "DIRECT",
+    "id": "rec_12"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "cdn-apple.com",
+    "policy": "DIRECT",
+    "id": "rec_13"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "akadns.net",
+    "policy": "DIRECT",
+    "id": "rec_14"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "akamaiedge.net",
+    "policy": "DIRECT",
+    "id": "rec_15"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "edgekey.net",
+    "policy": "DIRECT",
+    "id": "rec_16"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mwcloudcdn.com",
+    "policy": "DIRECT",
+    "id": "rec_17"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mwcname.com",
+    "policy": "DIRECT",
+    "id": "rec_18"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "microsoft.com",
+    "policy": "DIRECT",
+    "id": "rec_19"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "microsoftonline.com",
+    "policy": "DIRECT",
+    "id": "rec_20"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "office.com",
+    "policy": "DIRECT",
+    "id": "rec_21"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "office365.com",
+    "policy": "DIRECT",
+    "id": "rec_22"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "officecdn",
+    "policy": "DIRECT",
+    "id": "rec_23"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "msn.com",
+    "policy": "DIRECT",
+    "id": "rec_24"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "azureedge.net",
+    "policy": "DIRECT",
+    "id": "rec_25"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bing.com",
+    "policy": "DIRECT",
+    "id": "rec_26"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "feishu.cn",
+    "policy": "DIRECT",
+    "id": "rec_27"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "larkoffice.com",
+    "policy": "DIRECT",
+    "id": "rec_28"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "feishucdn.com",
+    "policy": "DIRECT",
+    "id": "rec_29"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bytedance.net",
+    "policy": "DIRECT",
+    "id": "rec_30"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bytetech.info",
+    "policy": "DIRECT",
+    "id": "rec_31"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "byted.org",
+    "policy": "DIRECT",
+    "id": "rec_32"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "byteintl.net",
+    "policy": "DIRECT",
+    "id": "rec_33"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "zijieapi.com",
+    "policy": "DIRECT",
+    "id": "rec_34"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ibytedapm.com",
+    "policy": "DIRECT",
+    "id": "rec_35"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "byteimg.com",
+    "policy": "DIRECT",
+    "id": "rec_36"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "byteacctimg.com",
+    "policy": "DIRECT",
+    "id": "rec_37"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tiktok-row.net",
+    "policy": "DIRECT",
+    "id": "rec_38"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "pstatp.com",
+    "policy": "DIRECT",
+    "id": "rec_39"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "qq.com",
+    "policy": "DIRECT",
+    "id": "rec_40"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "weixin.qq.com",
+    "policy": "DIRECT",
+    "id": "rec_41"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wechat.com",
+    "policy": "DIRECT",
+    "id": "rec_42"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "qqurl.com",
+    "policy": "DIRECT",
+    "id": "rec_43"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "qpic.cn",
+    "policy": "DIRECT",
+    "id": "rec_44"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "gtimg.com",
+    "policy": "DIRECT",
+    "id": "rec_45"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "myqcloud.com",
+    "policy": "DIRECT",
+    "id": "rec_46"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tencent.com",
+    "policy": "DIRECT",
+    "id": "rec_47"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tenpay.com",
+    "policy": "DIRECT",
+    "id": "rec_48"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "qcloud.com",
+    "policy": "DIRECT",
+    "id": "rec_49"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "alicdn",
+    "policy": "DIRECT",
+    "id": "rec_50"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "alipay",
+    "policy": "DIRECT",
+    "id": "rec_51"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "taobao",
+    "policy": "DIRECT",
+    "id": "rec_52"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "taobao.com",
+    "policy": "DIRECT",
+    "id": "rec_53"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tmall.com",
+    "policy": "DIRECT",
+    "id": "rec_54"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "jd.com",
+    "policy": "DIRECT",
+    "id": "rec_55"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "360buyimg.com",
+    "policy": "DIRECT",
+    "id": "rec_56"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "amap.com",
+    "policy": "DIRECT",
+    "id": "rec_57"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "autonavi.com",
+    "policy": "DIRECT",
+    "id": "rec_58"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "baidu",
+    "policy": "DIRECT",
+    "id": "rec_59"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bdimg.com",
+    "policy": "DIRECT",
+    "id": "rec_60"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bdstatic.com",
+    "policy": "DIRECT",
+    "id": "rec_61"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "163.com",
+    "policy": "DIRECT",
+    "id": "rec_62"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "126.com",
+    "policy": "DIRECT",
+    "id": "rec_63"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "126.net",
+    "policy": "DIRECT",
+    "id": "rec_64"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "127.net",
+    "policy": "DIRECT",
+    "id": "rec_65"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "netease.com",
+    "policy": "DIRECT",
+    "id": "rec_66"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bilibili.com",
+    "policy": "DIRECT",
+    "id": "rec_67"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bilivideo.com",
+    "policy": "DIRECT",
+    "id": "rec_68"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "weibo.com",
+    "policy": "DIRECT",
+    "id": "rec_69"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "zhihu.com",
+    "policy": "DIRECT",
+    "id": "rec_70"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "zhimg.com",
+    "policy": "DIRECT",
+    "id": "rec_71"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "iqiyi.com",
+    "policy": "DIRECT",
+    "id": "rec_72"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "youku.com",
+    "policy": "DIRECT",
+    "id": "rec_73"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sohu.com",
+    "policy": "DIRECT",
+    "id": "rec_74"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "soku.com",
+    "policy": "DIRECT",
+    "id": "rec_75"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sogou.com",
+    "policy": "DIRECT",
+    "id": "rec_76"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sogoucdn.com",
+    "policy": "DIRECT",
+    "id": "rec_77"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ximalaya.com",
+    "policy": "DIRECT",
+    "id": "rec_78"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "xmcdn.com",
+    "policy": "DIRECT",
+    "id": "rec_79"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "douban.com",
+    "policy": "DIRECT",
+    "id": "rec_80"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "doubanio.com",
+    "policy": "DIRECT",
+    "id": "rec_81"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "meituan.com",
+    "policy": "DIRECT",
+    "id": "rec_82"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "meituan.net",
+    "policy": "DIRECT",
+    "id": "rec_83"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "dianping.com",
+    "policy": "DIRECT",
+    "id": "rec_84"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ele.me",
+    "policy": "DIRECT",
+    "id": "rec_85"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mi.com",
+    "policy": "DIRECT",
+    "id": "rec_86"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "miui.com",
+    "policy": "DIRECT",
+    "id": "rec_87"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "miwifi.com",
+    "policy": "DIRECT",
+    "id": "rec_88"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mihoyo.com",
+    "policy": "DIRECT",
+    "id": "rec_89"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ctrip.com",
+    "policy": "DIRECT",
+    "id": "rec_90"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "suning.com",
+    "policy": "DIRECT",
+    "id": "rec_91"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tianyancha.com",
+    "policy": "DIRECT",
+    "id": "rec_92"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "youdao.com",
+    "policy": "DIRECT",
+    "id": "rec_93"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "csdn.net",
+    "policy": "DIRECT",
+    "id": "rec_94"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "jianshu.com",
+    "policy": "DIRECT",
+    "id": "rec_95"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "segmentfault.com",
+    "policy": "DIRECT",
+    "id": "rec_96"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sspai.com",
+    "policy": "DIRECT",
+    "id": "rec_97"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "36kr.com",
+    "policy": "DIRECT",
+    "id": "rec_98"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "oschina.net",
+    "policy": "DIRECT",
+    "id": "rec_99"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ipip.net",
+    "policy": "DIRECT",
+    "id": "rec_100"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ifeng.com",
+    "policy": "DIRECT",
+    "id": "rec_101"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ifengimg.com",
+    "policy": "DIRECT",
+    "id": "rec_102"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "caiyunapp.com",
+    "policy": "DIRECT",
+    "id": "rec_103"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "smzdm.com",
+    "policy": "DIRECT",
+    "id": "rec_104"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "speedtest.net",
+    "policy": "DIRECT",
+    "id": "rec_105"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "snapdrop.net",
+    "policy": "DIRECT",
+    "id": "rec_106"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "juejin.cn",
+    "policy": "DIRECT",
+    "id": "rec_107"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "xunlei.com",
+    "policy": "DIRECT",
+    "id": "rec_108"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "clouddn.com",
+    "policy": "DIRECT",
+    "id": "rec_109"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "qiniu.com",
+    "policy": "DIRECT",
+    "id": "rec_110"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "qiniucdn.com",
+    "policy": "DIRECT",
+    "id": "rec_111"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "upyun.com",
+    "policy": "DIRECT",
+    "id": "rec_112"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "upaiyun.com",
+    "policy": "DIRECT",
+    "id": "rec_113"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ghproxy.com",
+    "policy": "DIRECT",
+    "id": "rec_114"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "goproxy.com",
+    "policy": "DIRECT",
+    "id": "rec_115"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sentinelone.net",
+    "policy": "DIRECT",
+    "id": "rec_116"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "split.io",
+    "policy": "DIRECT",
+    "id": "rec_117"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bitwarden.com",
+    "policy": "DIRECT",
+    "id": "rec_118"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "steamcontent.com",
+    "policy": "DIRECT",
+    "id": "rec_119"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "licdn.com",
+    "policy": "DIRECT",
+    "id": "rec_120"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bhsr.com",
+    "policy": "DIRECT",
+    "id": "rec_125"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "decrypt.day",
+    "policy": "DIRECT",
+    "id": "rec_127"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "edu.cn",
+    "policy": "DIRECT",
+    "id": "rec_128"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "injections.adguard.org",
+    "policy": "DIRECT",
+    "id": "rec_129"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "local.adguard.org",
+    "policy": "DIRECT",
+    "id": "rec_130"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "local",
+    "policy": "DIRECT",
+    "id": "rec_131"
+  },
+  {
+    "enabled": true,
+    "type": "IP-CIDR",
+    "value": "127.0.0.0/8",
+    "policy": "DIRECT",
+    "id": "rec_132"
+  },
+  {
+    "enabled": true,
+    "type": "IP-CIDR",
+    "value": "224.0.0.0/4",
+    "policy": "DIRECT",
+    "id": "rec_133"
+  },
+  {
+    "enabled": true,
+    "type": "IP-CIDR",
+    "value": "17.0.0.0/8",
+    "policy": "DIRECT",
+    "id": "rec_134"
+  },
+  {
+    "enabled": true,
+    "type": "IP-CIDR",
+    "value": "100.100.255.0/24",
+    "policy": "DIRECT",
+    "id": "rec_135"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "services.googleapis.cn",
+    "policy": "VPN",
+    "id": "vpn_001"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "xn--ngstr-lra8j.com",
+    "policy": "VPN",
+    "id": "vpn_002"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "developer.apple.com",
+    "policy": "VPN",
+    "id": "vpn_003"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "digicert.com",
+    "policy": "VPN",
+    "id": "vpn_004"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "ocsp.apple.com",
+    "policy": "VPN",
+    "id": "vpn_005"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "ocsp.comodoca.com",
+    "policy": "VPN",
+    "id": "vpn_006"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "ocsp.usertrust.com",
+    "policy": "VPN",
+    "id": "vpn_007"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "ocsp.sectigo.com",
+    "policy": "VPN",
+    "id": "vpn_008"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "ocsp.verisign.net",
+    "policy": "VPN",
+    "id": "vpn_009"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "apple-dns.net",
+    "policy": "VPN",
+    "id": "vpn_010"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "testflight.apple.com",
+    "policy": "VPN",
+    "id": "vpn_011"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "sandbox.itunes.apple.com",
+    "policy": "VPN",
+    "id": "vpn_012"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "itunes.apple.com",
+    "policy": "VPN",
+    "id": "vpn_013"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "apps.apple.com",
+    "policy": "VPN",
+    "id": "vpn_014"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "blobstore.apple.com",
+    "policy": "VPN",
+    "id": "vpn_015"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN",
+    "value": "cvws.icloud-content.com",
+    "policy": "VPN",
+    "id": "vpn_016"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "amazon",
+    "policy": "VPN",
+    "id": "vpn_017"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "google",
+    "policy": "VPN",
+    "id": "vpn_018"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "gmail",
+    "policy": "VPN",
+    "id": "vpn_019"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "youtube",
+    "policy": "VPN",
+    "id": "vpn_020"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "facebook",
+    "policy": "VPN",
+    "id": "vpn_021"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "fb.me",
+    "policy": "VPN",
+    "id": "vpn_022"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "fbcdn.net",
+    "policy": "VPN",
+    "id": "vpn_023"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "twitter",
+    "policy": "VPN",
+    "id": "vpn_024"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "instagram",
+    "policy": "VPN",
+    "id": "vpn_025"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "dropbox",
+    "policy": "VPN",
+    "id": "vpn_026"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "twimg.com",
+    "policy": "VPN",
+    "id": "vpn_027"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "blogspot",
+    "policy": "VPN",
+    "id": "vpn_028"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "youtu.be",
+    "policy": "VPN",
+    "id": "vpn_029"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "whatsapp",
+    "policy": "VPN",
+    "id": "vpn_030"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "9to5mac.com",
+    "policy": "VPN",
+    "id": "vpn_031"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "abpchina.org",
+    "policy": "VPN",
+    "id": "vpn_032"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "adblockplus.org",
+    "policy": "VPN",
+    "id": "vpn_033"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "adobe.com",
+    "policy": "VPN",
+    "id": "vpn_034"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "akamaized.net",
+    "policy": "VPN",
+    "id": "vpn_035"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "alfredapp.com",
+    "policy": "VPN",
+    "id": "vpn_036"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "amplitude.com",
+    "policy": "VPN",
+    "id": "vpn_037"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ampproject.org",
+    "policy": "VPN",
+    "id": "vpn_038"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "android.com",
+    "policy": "VPN",
+    "id": "vpn_039"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "angularjs.org",
+    "policy": "VPN",
+    "id": "vpn_040"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "aolcdn.com",
+    "policy": "VPN",
+    "id": "vpn_041"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "apkpure.com",
+    "policy": "VPN",
+    "id": "vpn_042"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "appledaily.com",
+    "policy": "VPN",
+    "id": "vpn_043"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "appshopper.com",
+    "policy": "VPN",
+    "id": "vpn_044"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "appspot.com",
+    "policy": "VPN",
+    "id": "vpn_045"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "arcgis.com",
+    "policy": "VPN",
+    "id": "vpn_046"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "archive.org",
+    "policy": "VPN",
+    "id": "vpn_047"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "armorgames.com",
+    "policy": "VPN",
+    "id": "vpn_048"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "aspnetcdn.com",
+    "policy": "VPN",
+    "id": "vpn_049"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "att.com",
+    "policy": "VPN",
+    "id": "vpn_050"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "awsstatic.com",
+    "policy": "VPN",
+    "id": "vpn_051"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "azurewebsites.net",
+    "policy": "VPN",
+    "id": "vpn_052"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bintray.com",
+    "policy": "VPN",
+    "id": "vpn_053"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bit.com",
+    "policy": "VPN",
+    "id": "vpn_054"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bit.ly",
+    "policy": "VPN",
+    "id": "vpn_055"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bitbucket.org",
+    "policy": "VPN",
+    "id": "vpn_056"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bjango.com",
+    "policy": "VPN",
+    "id": "vpn_057"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bkrtx.com",
+    "policy": "VPN",
+    "id": "vpn_058"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "blog.com",
+    "policy": "VPN",
+    "id": "vpn_059"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "blogcdn.com",
+    "policy": "VPN",
+    "id": "vpn_060"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "blogger.com",
+    "policy": "VPN",
+    "id": "vpn_061"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "blogsmithmedia.com",
+    "policy": "VPN",
+    "id": "vpn_062"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "blogspot.com",
+    "policy": "VPN",
+    "id": "vpn_063"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "blogspot.hk",
+    "policy": "VPN",
+    "id": "vpn_064"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "bloomberg.com",
+    "policy": "VPN",
+    "id": "vpn_065"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "box.com",
+    "policy": "VPN",
+    "id": "vpn_066"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "box.net",
+    "policy": "VPN",
+    "id": "vpn_067"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "cachefly.net",
+    "policy": "VPN",
+    "id": "vpn_068"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "chromium.org",
+    "policy": "VPN",
+    "id": "vpn_069"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "cl.ly",
+    "policy": "VPN",
+    "id": "vpn_070"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "cloudflare.com",
+    "policy": "VPN",
+    "id": "vpn_071"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "cloudfront.net",
+    "policy": "VPN",
+    "id": "vpn_072"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "cloudmagic.com",
+    "policy": "VPN",
+    "id": "vpn_073"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "cmail19.com",
+    "policy": "VPN",
+    "id": "vpn_074"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "cnet.com",
+    "policy": "VPN",
+    "id": "vpn_075"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "cocoapods.org",
+    "policy": "VPN",
+    "id": "vpn_076"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "comodoca.com",
+    "policy": "VPN",
+    "id": "vpn_077"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "crashlytics.com",
+    "policy": "VPN",
+    "id": "vpn_078"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "culturedcode.com",
+    "policy": "VPN",
+    "id": "vpn_079"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "d.pr",
+    "policy": "VPN",
+    "id": "vpn_080"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "danilo.to",
+    "policy": "VPN",
+    "id": "vpn_081"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "dayone.me",
+    "policy": "VPN",
+    "id": "vpn_082"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "db.tt",
+    "policy": "VPN",
+    "id": "vpn_083"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "deskconnect.com",
+    "policy": "VPN",
+    "id": "vpn_084"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "disq.us",
+    "policy": "VPN",
+    "id": "vpn_085"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "disqus.com",
+    "policy": "VPN",
+    "id": "vpn_086"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "disquscdn.com",
+    "policy": "VPN",
+    "id": "vpn_087"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "dnsimple.com",
+    "policy": "VPN",
+    "id": "vpn_088"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "docker.com",
+    "policy": "VPN",
+    "id": "vpn_089"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "dribbble.com",
+    "policy": "VPN",
+    "id": "vpn_090"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "droplr.com",
+    "policy": "VPN",
+    "id": "vpn_091"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "duckduckgo.com",
+    "policy": "VPN",
+    "id": "vpn_092"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "dueapp.com",
+    "policy": "VPN",
+    "id": "vpn_093"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "dytt8.net",
+    "policy": "VPN",
+    "id": "vpn_094"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "edgecastcdn.net",
+    "policy": "VPN",
+    "id": "vpn_095"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "edgesuite.net",
+    "policy": "VPN",
+    "id": "vpn_096"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "engadget.com",
+    "policy": "VPN",
+    "id": "vpn_097"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "entrust.net",
+    "policy": "VPN",
+    "id": "vpn_098"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "eurekavpt.com",
+    "policy": "VPN",
+    "id": "vpn_099"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "evernote.com",
+    "policy": "VPN",
+    "id": "vpn_100"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "fabric.io",
+    "policy": "VPN",
+    "id": "vpn_101"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "fast.com",
+    "policy": "VPN",
+    "id": "vpn_102"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "fastly.net",
+    "policy": "VPN",
+    "id": "vpn_103"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "fc2.com",
+    "policy": "VPN",
+    "id": "vpn_104"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "feedburner.com",
+    "policy": "VPN",
+    "id": "vpn_105"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "feedly.com",
+    "policy": "VPN",
+    "id": "vpn_106"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "feedsportal.com",
+    "policy": "VPN",
+    "id": "vpn_107"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "fiftythree.com",
+    "policy": "VPN",
+    "id": "vpn_108"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "firebaseio.com",
+    "policy": "VPN",
+    "id": "vpn_109"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "flexibits.com",
+    "policy": "VPN",
+    "id": "vpn_110"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "flickr.com",
+    "policy": "VPN",
+    "id": "vpn_111"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "flipboard.com",
+    "policy": "VPN",
+    "id": "vpn_112"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "g.co",
+    "policy": "VPN",
+    "id": "vpn_113"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "gabia.net",
+    "policy": "VPN",
+    "id": "vpn_114"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "geni.us",
+    "policy": "VPN",
+    "id": "vpn_115"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "gfx.ms",
+    "policy": "VPN",
+    "id": "vpn_116"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ggpht.com",
+    "policy": "VPN",
+    "id": "vpn_117"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ghostnoteapp.com",
+    "policy": "VPN",
+    "id": "vpn_118"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "git.io",
+    "policy": "VPN",
+    "id": "vpn_119"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-KEYWORD",
+    "value": "github",
+    "policy": "VPN",
+    "id": "vpn_120"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "globalsign.com",
+    "policy": "VPN",
+    "id": "vpn_121"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "gmodules.com",
+    "policy": "VPN",
+    "id": "vpn_122"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "godaddy.com",
+    "policy": "VPN",
+    "id": "vpn_123"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "golang.org",
+    "policy": "VPN",
+    "id": "vpn_124"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "gongm.in",
+    "policy": "VPN",
+    "id": "vpn_125"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "goo.gl",
+    "policy": "VPN",
+    "id": "vpn_126"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "goodreaders.com",
+    "policy": "VPN",
+    "id": "vpn_127"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "goodreads.com",
+    "policy": "VPN",
+    "id": "vpn_128"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "gravatar.com",
+    "policy": "VPN",
+    "id": "vpn_129"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "gstatic.com",
+    "policy": "VPN",
+    "id": "vpn_130"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "gvt0.com",
+    "policy": "VPN",
+    "id": "vpn_131"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "hockeyapp.net",
+    "policy": "VPN",
+    "id": "vpn_132"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "hotmail.com",
+    "policy": "VPN",
+    "id": "vpn_133"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "icons8.com",
+    "policy": "VPN",
+    "id": "vpn_134"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ifixit.com",
+    "policy": "VPN",
+    "id": "vpn_135"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ift.tt",
+    "policy": "VPN",
+    "id": "vpn_136"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ifttt.com",
+    "policy": "VPN",
+    "id": "vpn_137"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "iherb.com",
+    "policy": "VPN",
+    "id": "vpn_138"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "imageshack.us",
+    "policy": "VPN",
+    "id": "vpn_139"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "img.ly",
+    "policy": "VPN",
+    "id": "vpn_140"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "imgur.com",
+    "policy": "VPN",
+    "id": "vpn_141"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "imore.com",
+    "policy": "VPN",
+    "id": "vpn_142"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "instapaper.com",
+    "policy": "VPN",
+    "id": "vpn_143"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ipn.li",
+    "policy": "VPN",
+    "id": "vpn_144"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "is.gd",
+    "policy": "VPN",
+    "id": "vpn_145"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "issuu.com",
+    "policy": "VPN",
+    "id": "vpn_146"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "itgonglun.com",
+    "policy": "VPN",
+    "id": "vpn_147"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "itun.es",
+    "policy": "VPN",
+    "id": "vpn_148"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ixquick.com",
+    "policy": "VPN",
+    "id": "vpn_149"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "j.mp",
+    "policy": "VPN",
+    "id": "vpn_150"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "js.revsci.net",
+    "policy": "VPN",
+    "id": "vpn_151"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "jshint.com",
+    "policy": "VPN",
+    "id": "vpn_152"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "jtvnw.net",
+    "policy": "VPN",
+    "id": "vpn_153"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "justgetflux.com",
+    "policy": "VPN",
+    "id": "vpn_154"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "kat.cr",
+    "policy": "VPN",
+    "id": "vpn_155"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "klip.me",
+    "policy": "VPN",
+    "id": "vpn_156"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "libsyn.com",
+    "policy": "VPN",
+    "id": "vpn_157"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "linkedin.com",
+    "policy": "VPN",
+    "id": "vpn_158"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "line-apps.com",
+    "policy": "VPN",
+    "id": "vpn_159"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "linode.com",
+    "policy": "VPN",
+    "id": "vpn_160"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "lithium.com",
+    "policy": "VPN",
+    "id": "vpn_161"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "littlehj.com",
+    "policy": "VPN",
+    "id": "vpn_162"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "live.com",
+    "policy": "VPN",
+    "id": "vpn_163"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "live.net",
+    "policy": "VPN",
+    "id": "vpn_164"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "livefilestore.com",
+    "policy": "VPN",
+    "id": "vpn_165"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "llnwd.net",
+    "policy": "VPN",
+    "id": "vpn_166"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "macid.co",
+    "policy": "VPN",
+    "id": "vpn_167"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "macromedia.com",
+    "policy": "VPN",
+    "id": "vpn_168"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "macrumors.com",
+    "policy": "VPN",
+    "id": "vpn_169"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mashable.com",
+    "policy": "VPN",
+    "id": "vpn_170"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mathjax.org",
+    "policy": "VPN",
+    "id": "vpn_171"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "medium.com",
+    "policy": "VPN",
+    "id": "vpn_172"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mega.co.nz",
+    "policy": "VPN",
+    "id": "vpn_173"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mega.nz",
+    "policy": "VPN",
+    "id": "vpn_174"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "megaupload.com",
+    "policy": "VPN",
+    "id": "vpn_175"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "microsofttranslator.com",
+    "policy": "VPN",
+    "id": "vpn_176"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mindnode.com",
+    "policy": "VPN",
+    "id": "vpn_177"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "mobile01.com",
+    "policy": "VPN",
+    "id": "vpn_178"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "modmyi.com",
+    "policy": "VPN",
+    "id": "vpn_179"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "msedge.net",
+    "policy": "VPN",
+    "id": "vpn_180"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "myfontastic.com",
+    "policy": "VPN",
+    "id": "vpn_181"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "name.com",
+    "policy": "VPN",
+    "id": "vpn_182"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "nextmedia.com",
+    "policy": "VPN",
+    "id": "vpn_183"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "nsstatic.net",
+    "policy": "VPN",
+    "id": "vpn_184"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "nssurge.com",
+    "policy": "VPN",
+    "id": "vpn_185"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "nyt.com",
+    "policy": "VPN",
+    "id": "vpn_186"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "nytimes.com",
+    "policy": "VPN",
+    "id": "vpn_187"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "omnigroup.com",
+    "policy": "VPN",
+    "id": "vpn_188"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "onedrive.com",
+    "policy": "VPN",
+    "id": "vpn_189"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "onenote.com",
+    "policy": "VPN",
+    "id": "vpn_190"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ooyala.com",
+    "policy": "VPN",
+    "id": "vpn_191"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "openvpn.net",
+    "policy": "VPN",
+    "id": "vpn_192"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "openwrt.org",
+    "policy": "VPN",
+    "id": "vpn_193"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "orkut.com",
+    "policy": "VPN",
+    "id": "vpn_194"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "osxdaily.com",
+    "policy": "VPN",
+    "id": "vpn_195"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "outlook.com",
+    "policy": "VPN",
+    "id": "vpn_196"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ow.ly",
+    "policy": "VPN",
+    "id": "vpn_197"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "paddleapi.com",
+    "policy": "VPN",
+    "id": "vpn_198"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "parallels.com",
+    "policy": "VPN",
+    "id": "vpn_199"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "parse.com",
+    "policy": "VPN",
+    "id": "vpn_200"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "pdfexpert.com",
+    "policy": "VPN",
+    "id": "vpn_201"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "periscope.tv",
+    "policy": "VPN",
+    "id": "vpn_202"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "pinboard.in",
+    "policy": "VPN",
+    "id": "vpn_203"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "pinterest.com",
+    "policy": "VPN",
+    "id": "vpn_204"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "pixelmator.com",
+    "policy": "VPN",
+    "id": "vpn_205"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "pixiv.net",
+    "policy": "VPN",
+    "id": "vpn_206"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "playpcesor.com",
+    "policy": "VPN",
+    "id": "vpn_207"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "playstation.com",
+    "policy": "VPN",
+    "id": "vpn_208"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "playstation.com.hk",
+    "policy": "VPN",
+    "id": "vpn_209"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "playstation.net",
+    "policy": "VPN",
+    "id": "vpn_210"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "playstationnetwork.com",
+    "policy": "VPN",
+    "id": "vpn_211"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "pushwoosh.com",
+    "policy": "VPN",
+    "id": "vpn_212"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "rime.im",
+    "policy": "VPN",
+    "id": "vpn_213"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "servebom.com",
+    "policy": "VPN",
+    "id": "vpn_214"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sfx.ms",
+    "policy": "VPN",
+    "id": "vpn_215"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "shadowsocks.org",
+    "policy": "VPN",
+    "id": "vpn_216"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sharethis.com",
+    "policy": "VPN",
+    "id": "vpn_217"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "shazam.com",
+    "policy": "VPN",
+    "id": "vpn_218"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "skype.com",
+    "policy": "VPN",
+    "id": "vpn_219"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "smartmailcloud.com",
+    "policy": "VPN",
+    "id": "vpn_221"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sndcdn.com",
+    "policy": "VPN",
+    "id": "vpn_222"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sony.com",
+    "policy": "VPN",
+    "id": "vpn_223"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "soundcloud.com",
+    "policy": "VPN",
+    "id": "vpn_224"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sourceforge.net",
+    "policy": "VPN",
+    "id": "vpn_225"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "spotify.com",
+    "policy": "VPN",
+    "id": "vpn_226"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "squarespace.com",
+    "policy": "VPN",
+    "id": "vpn_227"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "sstatic.net",
+    "policy": "VPN",
+    "id": "vpn_228"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "st.luluku.pw",
+    "policy": "VPN",
+    "id": "vpn_229"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "stackoverflow.com",
+    "policy": "VPN",
+    "id": "vpn_230"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "startpage.com",
+    "policy": "VPN",
+    "id": "vpn_231"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "staticflickr.com",
+    "policy": "VPN",
+    "id": "vpn_232"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "steamcommunity.com",
+    "policy": "VPN",
+    "id": "vpn_233"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "symauth.com",
+    "policy": "VPN",
+    "id": "vpn_234"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "symcb.com",
+    "policy": "VPN",
+    "id": "vpn_235"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "symcd.com",
+    "policy": "VPN",
+    "id": "vpn_236"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tapbots.com",
+    "policy": "VPN",
+    "id": "vpn_237"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tapbots.net",
+    "policy": "VPN",
+    "id": "vpn_238"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tdesktop.com",
+    "policy": "VPN",
+    "id": "vpn_239"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "techcrunch.com",
+    "policy": "VPN",
+    "id": "vpn_240"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "techsmith.com",
+    "policy": "VPN",
+    "id": "vpn_241"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "thepiratebay.org",
+    "policy": "VPN",
+    "id": "vpn_242"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "theverge.com",
+    "policy": "VPN",
+    "id": "vpn_243"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "time.com",
+    "policy": "VPN",
+    "id": "vpn_244"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "timeinc.net",
+    "policy": "VPN",
+    "id": "vpn_245"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tiny.cc",
+    "policy": "VPN",
+    "id": "vpn_246"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tinypic.com",
+    "policy": "VPN",
+    "id": "vpn_247"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tmblr.co",
+    "policy": "VPN",
+    "id": "vpn_248"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "todoist.com",
+    "policy": "VPN",
+    "id": "vpn_249"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "trello.com",
+    "policy": "VPN",
+    "id": "vpn_250"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "trustasiassl.com",
+    "policy": "VPN",
+    "id": "vpn_251"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tumblr.co",
+    "policy": "VPN",
+    "id": "vpn_252"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tumblr.com",
+    "policy": "VPN",
+    "id": "vpn_253"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tweetdeck.com",
+    "policy": "VPN",
+    "id": "vpn_254"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "tweetmarker.net",
+    "policy": "VPN",
+    "id": "vpn_255"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "twitch.tv",
+    "policy": "VPN",
+    "id": "vpn_256"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "txmblr.com",
+    "policy": "VPN",
+    "id": "vpn_257"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "typekit.net",
+    "policy": "VPN",
+    "id": "vpn_258"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ubertags.com",
+    "policy": "VPN",
+    "id": "vpn_259"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ublock.org",
+    "policy": "VPN",
+    "id": "vpn_260"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ubnt.com",
+    "policy": "VPN",
+    "id": "vpn_261"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ulyssesapp.com",
+    "policy": "VPN",
+    "id": "vpn_262"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "urchin.com",
+    "policy": "VPN",
+    "id": "vpn_263"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "usertrust.com",
+    "policy": "VPN",
+    "id": "vpn_264"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "v.gd",
+    "policy": "VPN",
+    "id": "vpn_265"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "v2ex.com",
+    "policy": "VPN",
+    "id": "vpn_266"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "vimeo.com",
+    "policy": "VPN",
+    "id": "vpn_267"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "vimeocdn.com",
+    "policy": "VPN",
+    "id": "vpn_268"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "vine.co",
+    "policy": "VPN",
+    "id": "vpn_269"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "vivaldi.com",
+    "policy": "VPN",
+    "id": "vpn_270"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "vox-cdn.com",
+    "policy": "VPN",
+    "id": "vpn_271"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "vsco.co",
+    "policy": "VPN",
+    "id": "vpn_272"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "vultr.com",
+    "policy": "VPN",
+    "id": "vpn_273"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "w.org",
+    "policy": "VPN",
+    "id": "vpn_274"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "w3schools.com",
+    "policy": "VPN",
+    "id": "vpn_275"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "webtype.com",
+    "policy": "VPN",
+    "id": "vpn_276"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wikiwand.com",
+    "policy": "VPN",
+    "id": "vpn_277"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wikileaks.org",
+    "policy": "VPN",
+    "id": "vpn_278"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wikimedia.org",
+    "policy": "VPN",
+    "id": "vpn_279"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wikipedia.com",
+    "policy": "VPN",
+    "id": "vpn_280"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wikipedia.org",
+    "policy": "VPN",
+    "id": "vpn_281"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "windows.com",
+    "policy": "VPN",
+    "id": "vpn_282"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "windows.net",
+    "policy": "VPN",
+    "id": "vpn_283"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wire.com",
+    "policy": "VPN",
+    "id": "vpn_284"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wordpress.com",
+    "policy": "VPN",
+    "id": "vpn_285"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "workflowy.com",
+    "policy": "VPN",
+    "id": "vpn_286"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wp.com",
+    "policy": "VPN",
+    "id": "vpn_287"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wsj.com",
+    "policy": "VPN",
+    "id": "vpn_288"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "wsj.net",
+    "policy": "VPN",
+    "id": "vpn_289"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "xda-developers.com",
+    "policy": "VPN",
+    "id": "vpn_290"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "xeeno.com",
+    "policy": "VPN",
+    "id": "vpn_291"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "xiti.com",
+    "policy": "VPN",
+    "id": "vpn_292"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "yahoo.com",
+    "policy": "VPN",
+    "id": "vpn_293"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "yimg.com",
+    "policy": "VPN",
+    "id": "vpn_294"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ying.com",
+    "policy": "VPN",
+    "id": "vpn_295"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "yoyo.org",
+    "policy": "VPN",
+    "id": "vpn_296"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ytimg.com",
+    "policy": "VPN",
+    "id": "vpn_297"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "telegra.ph",
+    "policy": "VPN",
+    "id": "vpn_298"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "telegram.org",
+    "policy": "VPN",
+    "id": "vpn_299"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "github.com",
+    "policy": "VPN",
+    "id": "github_01"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "githubusercontent.com",
+    "policy": "VPN",
+    "id": "github_02"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "githubassets.com",
+    "policy": "VPN",
+    "id": "github_03"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "github.io",
+    "policy": "VPN",
+    "id": "github_04"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "ghcr.io",
+    "policy": "VPN",
+    "id": "github_05"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "githubstatus.com",
+    "policy": "VPN",
+    "id": "github_06"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "live.github.com",
+    "policy": "VPN",
+    "id": "github_07"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "github.dev",
+    "policy": "VPN",
+    "id": "github_08"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "npmjs.com",
+    "policy": "VPN",
+    "id": "github_09"
+  },
+  {
+    "enabled": true,
+    "type": "DOMAIN-SUFFIX",
+    "value": "npmjs.org",
+    "policy": "VPN",
+    "id": "github_10"
+  },
+  {
+    "enabled": true,
+    "type": "GEOIP",
+    "value": "CN",
+    "policy": "DIRECT",
+    "id": "rec_136"
+  }
+]
