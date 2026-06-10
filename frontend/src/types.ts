@@ -113,7 +113,7 @@ export interface ServiceStatus {
 }
 
 // New types for corplink integration
-export interface LoginMethodsResult { ok: boolean; methods?: string[]; error?: string }
+export interface LoginMethodsResult { ok: boolean; methods?: string[]; verify_types?: string[]; error?: string }
 export interface QRCodeResult { ok: boolean; login_url?: string; token?: string; error?: string }
 export interface VPNNode { id: number; name: string; latency_ms: number; protocol_mode: number }
 export interface VPNNodesResult { ok: boolean; nodes?: VPNNode[]; error?: string }

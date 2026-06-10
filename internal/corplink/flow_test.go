@@ -72,17 +72,17 @@ func TestDiscoverAndLoginMethods(t *testing.T) {
 	t.Logf("  Server: %s", sess.Server)
 
 	t.Log("Step 2: LoginMethods")
-	methods, err := cl.LoginMethods(ctx)
+	info, err := cl.LoginMethods(ctx)
 	if err != nil {
 		t.Fatalf("LoginMethods failed: %v", err)
 	}
-	if len(methods) == 0 {
+	if len(info.Methods) == 0 {
 		t.Fatal("LoginMethods returned empty list")
 	}
-	t.Logf("  Methods: %v", methods)
+	t.Logf("  Methods: %v", info.Methods)
 
 	want := map[string]bool{"email": true, "mobile": true, "lark": true}
-	for _, m := range methods {
+	for _, m := range info.Methods {
 		if !want[m] {
 			t.Errorf("unexpected method %q", m)
 		}
@@ -110,14 +110,14 @@ func TestLoginMethodsOnlyEmail(t *testing.T) {
 
 	cl.DiscoverCompany(context.Background(), "test") //nolint:errcheck
 
-	methods, err := cl.LoginMethods(context.Background())
+	info, err := cl.LoginMethods(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(methods) != 1 || methods[0] != "email" {
-		t.Fatalf("want [email], got %v", methods)
+	if len(info.Methods) != 1 || info.Methods[0] != "email" {
+		t.Fatalf("want [email], got %v", info.Methods)
 	}
-	t.Logf("Methods: %v", methods)
+	t.Logf("Methods: %v", info.Methods)
 }
 
 func TestDiscoverEmptyDomain(t *testing.T) {
@@ -156,6 +156,41 @@ func TestDiscoverAPIError(t *testing.T) {
 		t.Fatalf("expected 'company not found' error, got: %v", err)
 	}
 	t.Logf("Got expected error: %v", err)
+}
+
+// TestDiscoverBytedanceRealAPI hits the real corplink match endpoint with
+// company_name="bytedance" and verifies that DiscoverCompany resolves a
+// valid server URL and that LoginMethods can be fetched from it.
+func TestDiscoverBytedanceRealAPI(t *testing.T) {
+	ctx := context.Background()
+	sess := LoadSession(t.TempDir() + "/session.json")
+	cl := NewClient(sess)
+
+	t.Log("Step 1: DiscoverCompany with real API (company=bytedance)")
+	if err := cl.DiscoverCompany(ctx, "bytedance"); err != nil {
+		t.Fatalf("DiscoverCompany failed: %v", err)
+	}
+	if sess.Server == "" {
+		t.Fatal("Server not set after DiscoverCompany")
+	}
+	t.Logf("  Resolved Server: %s", sess.Server)
+	t.Logf("  CompanyName: %s", sess.CompanyName)
+
+	// Verify the resolved URL is well-formed.
+	if !strings.HasPrefix(sess.Server, "http://") && !strings.HasPrefix(sess.Server, "https://") {
+		t.Fatalf("resolved Server %q missing scheme", sess.Server)
+	}
+
+	t.Log("Step 2: LoginMethods from resolved server")
+	info, err := cl.LoginMethods(ctx)
+	if err != nil {
+		t.Fatalf("LoginMethods failed: %v", err)
+	}
+	if len(info.Methods) == 0 {
+		t.Fatal("LoginMethods returned empty list")
+	}
+	t.Logf("  Available methods: %v", info.Methods)
+	t.Logf("  Verify types: %v", info.VerifyTypes)
 }
 
 // TestCookieInjectionToNodeHost verifies that cookies set by the main server

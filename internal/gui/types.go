@@ -117,11 +117,12 @@ type LaunchServiceRequest struct {
 	WorkDir    string `json:"work_dir"`
 }
 
-// LoginMethodsResult holds available login method names.
+// LoginMethodsResult holds available login method names and verify types.
 type LoginMethodsResult struct {
-	OK      bool     `json:"ok"`
-	Methods []string `json:"methods,omitempty"`
-	Error   string   `json:"error,omitempty"`
+	OK          bool     `json:"ok"`
+	Methods     []string `json:"methods,omitempty"`
+	VerifyTypes []string `json:"verify_types,omitempty"`
+	Error       string   `json:"error,omitempty"`
 }
 
 // QRCodeResult holds QR login URL and token.

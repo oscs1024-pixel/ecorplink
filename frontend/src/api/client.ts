@@ -115,6 +115,9 @@ export const api = {
   verifyCode(codeType: string, account: string, code: string): Promise<CommandResult> {
     return call('VerifyCode', codeType, account, code)
   },
+  loginWithPassword(account: string, password: string): Promise<CommandResult> {
+    return call('LoginWithPassword', account, password)
+  },
   getQRCode(): Promise<QRCodeResult> {
     return call('GetQRCode')
   },

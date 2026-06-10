@@ -3,6 +3,7 @@ package corplink
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -303,6 +304,7 @@ func (c *Client) DiscoverCompany(ctx context.Context, code string) error {
 	if resp.Data.Domain == "" {
 		return fmt.Errorf("discover company: empty domain in response")
 	}
+
 	c.session.mu.Lock()
 	c.session.Server = resp.Data.Domain
 	c.session.CompanyName = code
@@ -312,14 +314,21 @@ func (c *Client) DiscoverCompany(ctx context.Context, code string) error {
 	return nil
 }
 
-// LoginMethods returns available login method identifiers.
+// LoginMethodInfo holds available login methods and their verify types.
+type LoginMethodInfo struct {
+	Methods     []string `json:"methods"`
+	VerifyTypes []string `json:"verify_types"`
+}
+
+// LoginMethods returns available login method identifiers and verify types.
 // Returns: "email", "mobile", "lark" depending on server config.
-func (c *Client) LoginMethods(ctx context.Context) ([]string, error) {
+func (c *Client) LoginMethods(ctx context.Context) (*LoginMethodInfo, error) {
 	type loginSetting struct {
 		LoginOrders         []string `json:"login_orders"`
 		LoginAccount        []string `json:"login_account"`
 		ScanCodeLoginEnable bool     `json:"scan_code_login_enable"`
 		ScanCodeTps         []string `json:"scan_code_tps"`
+		LoginVerifyType     []string `json:"login_verify_type"`
 	}
 	var resp apiResp[loginSetting]
 	if err := c.get(ctx, c.apiURL("/api/login/setting"), &resp); err != nil {
@@ -342,7 +351,7 @@ func (c *Client) LoginMethods(ctx context.Context) ([]string, error) {
 
 	for _, order := range d.LoginOrders {
 		switch order {
-		case "feilian", "feilian_v1":
+		case "feilian", "feilian_v1", "mobile_auth":
 			for _, acc := range d.LoginAccount {
 				switch acc {
 				case "email":
@@ -352,13 +361,11 @@ func (c *Client) LoginMethods(ctx context.Context) ([]string, error) {
 				}
 			}
 		case "lark":
-			if d.ScanCodeLoginEnable {
-				add("lark")
-			}
+			add("lark")
 		}
 	}
 
-	// Fallback: scan_code_tps
+	// Fallback: scan_code_tps (for servers that don't list lark in login_orders)
 	if d.ScanCodeLoginEnable {
 		for _, tps := range d.ScanCodeTps {
 			if tps == "lark" {
@@ -367,5 +374,33 @@ func (c *Client) LoginMethods(ctx context.Context) ([]string, error) {
 		}
 	}
 
-	return methods, nil
+	return &LoginMethodInfo{
+		Methods:     methods,
+		VerifyTypes: d.LoginVerifyType,
+	}, nil
+}
+
+// LoginWithPassword performs password-based login (used by bytedance and
+// other deployments where login_verify_type is "password").
+// Password is SHA256-hashed before sending if it is not already a 64-char hex string.
+func (c *Client) LoginWithPassword(ctx context.Context, account, password string) error {
+	// Hash password if not already a 64-char hex string (SHA256 length)
+	if len(password) != 64 {
+		h := sha256.New()
+		h.Write([]byte(password))
+		password = fmt.Sprintf("%x", h.Sum(nil))
+	}
+
+	type loginReq struct {
+		Password string `json:"password"`
+		UserName string `json:"user_name"`
+	}
+	var loginResp apiResp[any]
+	if err := c.post(ctx, c.apiURL("/api/login"), loginReq{Password: password, UserName: account}, &loginResp); err != nil {
+		return err
+	}
+	if loginResp.Code != 0 {
+		return fmt.Errorf("login: %s", loginResp.Message)
+	}
+	return nil
 }

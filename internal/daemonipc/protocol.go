@@ -7,6 +7,7 @@ type Cmd struct {
 	CodeType          string `json:"code_type,omitempty"`
 	Account           string `json:"account,omitempty"`
 	Code              string `json:"code,omitempty"`
+	Password          string `json:"password,omitempty"`
 	Token             string `json:"token,omitempty"`
 	NodeID            int    `json:"node_id,omitempty"`
 	FollowSplitRoutes bool   `json:"follow_split_routes,omitempty"`
@@ -56,6 +57,7 @@ const (
 	ActionLoginMethods         = "login_methods"
 	ActionSendCode             = "send_code"
 	ActionVerifyCode           = "verify_code"
+	ActionLoginPassword        = "login_password"
 	ActionGetQRCode            = "get_qrcode"
 	ActionPollQR               = "poll_qr"
 	ActionLogout               = "logout"

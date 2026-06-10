@@ -387,7 +387,7 @@ func (s *Service) DiscoverCompany(company string) CommandResult {
 	return socketResult(resp, err)
 }
 
-// GetLoginMethods returns available login method names from the daemon.
+// GetLoginMethods returns available login method names and verify types from the daemon.
 func (s *Service) GetLoginMethods() LoginMethodsResult {
 	resp, err := s.sendCmd(daemonipc.Cmd{Action: daemonipc.ActionLoginMethods})
 	if err != nil {
@@ -396,9 +396,18 @@ func (s *Service) GetLoginMethods() LoginMethodsResult {
 	if !resp.OK {
 		return LoginMethodsResult{OK: false, Error: resp.Error}
 	}
-	var methods []string
-	remarshal(resp.Data, &methods)
-	return LoginMethodsResult{OK: true, Methods: methods}
+	var info struct {
+		Methods     []string `json:"methods"`
+		VerifyTypes []string `json:"verify_types"`
+	}
+	remarshal(resp.Data, &info)
+	return LoginMethodsResult{OK: true, Methods: info.Methods, VerifyTypes: info.VerifyTypes}
+}
+
+// LoginWithPassword performs password-based login via the daemon.
+func (s *Service) LoginWithPassword(account, password string) CommandResult {
+	resp, err := s.sendCmd(daemonipc.Cmd{Action: daemonipc.ActionLoginPassword, Account: account, Password: password})
+	return socketResult(resp, err)
 }
 
 // SendVerifyCode sends a verification code via the daemon.

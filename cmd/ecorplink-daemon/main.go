@@ -341,11 +341,11 @@ func dispatchHandler(ctx context.Context, cmd daemonipc.Cmd, cl *corplink.Client
 		return daemonipc.Response{OK: true}
 
 	case daemonipc.ActionLoginMethods:
-		methods, err := cl.LoginMethods(ctx)
+		info, err := cl.LoginMethods(ctx)
 		if err != nil {
 			return daemonipc.Response{OK: false, Error: err.Error()}
 		}
-		return daemonipc.Response{OK: true, Data: methods}
+		return daemonipc.Response{OK: true, Data: info}
 
 	case daemonipc.ActionSendCode:
 		if err := cl.SendCode(ctx, cmd.CodeType, cmd.Account); err != nil {
@@ -355,6 +355,13 @@ func dispatchHandler(ctx context.Context, cmd daemonipc.Cmd, cl *corplink.Client
 
 	case daemonipc.ActionVerifyCode:
 		if err := cl.VerifyCode(ctx, cmd.CodeType, cmd.Account, cmd.Code); err != nil {
+			return daemonipc.Response{OK: false, Error: err.Error()}
+		}
+		cm.Session().Save() //nolint:errcheck
+		return daemonipc.Response{OK: true}
+
+	case daemonipc.ActionLoginPassword:
+		if err := cl.LoginWithPassword(ctx, cmd.Account, cmd.Password); err != nil {
 			return daemonipc.Response{OK: false, Error: err.Error()}
 		}
 		cm.Session().Save() //nolint:errcheck

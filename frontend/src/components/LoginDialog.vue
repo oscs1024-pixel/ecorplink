@@ -16,9 +16,11 @@ const emit = defineEmits<{
 // Step state
 const company = ref('')
 const loginMethods = ref<string[]>([])
+const verifyTypes = ref<string[]>([])
 const selectedMethod = ref('')
 const account = ref('')
 const code = ref('')
+const password = ref('')
 const qrUrl = ref('')
 const qrToken = ref('')
 const qrDataURL = ref('')
@@ -29,6 +31,7 @@ const qrPolling = ref(false)
 let qrPollTimer: number | undefined
 
 const isQRMethod = computed(() => selectedMethod.value === 'lark')
+const isPasswordVerify = computed(() => verifyTypes.value.includes('password'))
 
 function methodLabel(m: string): string {
   const labels: Record<string, string> = {
@@ -46,8 +49,13 @@ async function discoverAndFetchMethods() {
     const res = await api.discoverCompany(company.value.trim())
     if (!res.ok) { loginError.value = res.summary || '公司代码无效'; return }
     const lr = await api.getLoginMethods()
-    if (!lr.ok || !lr.methods?.length) { loginError.value = lr.error || '获取登录方式失败'; return }
-    loginMethods.value = lr.methods
+    if (!lr.ok) { loginError.value = lr.error || '获取登录方式失败'; return }
+    loginMethods.value = lr.methods || []
+    verifyTypes.value = lr.verify_types || []
+    if (!lr.methods?.length) {
+      loginError.value = '当前公司暂无支持的登录方式'
+      return
+    }
     selectedMethod.value = lr.methods[0]
   } catch (e) {
     loginError.value = String(e)
@@ -76,6 +84,20 @@ async function verifyAndLogin() {
   try {
     const res = await api.verifyCode(selectedMethod.value, account.value.trim(), code.value.trim())
     if (!res.ok) { loginError.value = res.summary || '验证码错误'; return }
+    onLoginSuccess()
+  } catch (e) {
+    loginError.value = String(e)
+  } finally {
+    loginBusy.value = false
+  }
+}
+
+async function doPasswordLogin() {
+  loginBusy.value = true
+  loginError.value = ''
+  try {
+    const res = await api.loginWithPassword(account.value.trim(), password.value)
+    if (!res.ok) { loginError.value = res.summary || '密码错误'; return }
     onLoginSuccess()
   } catch (e) {
     loginError.value = String(e)
@@ -143,9 +165,11 @@ function onLoginSuccess() {
 
 function goBack() {
   loginMethods.value = []
+  verifyTypes.value = []
   selectedMethod.value = ''
   account.value = ''
   code.value = ''
+  password.value = ''
   codeSent.value = false
   stopQRPoll()
   qrUrl.value = ''
@@ -206,29 +230,47 @@ function goBack() {
           </template>
         </template>
 
-        <!-- Code-based login -->
+        <!-- Account-based login (password or code) -->
         <template v-else>
           <n-input
             v-model:value="account"
             :placeholder="selectedMethod === 'mobile' ? '手机号' : '邮箱'"
             :disabled="loginBusy"
           />
-          <template v-if="!codeSent">
-            <n-button type="primary" :loading="loginBusy" @click="sendCode" block>
-              发送验证码
-            </n-button>
-          </template>
-          <template v-else>
+
+          <!-- Password login (e.g. bytedance) -->
+          <template v-if="isPasswordVerify">
             <n-input
-              v-model:value="code"
-              placeholder="验证码"
+              v-model:value="password"
+              type="password"
+              placeholder="密码"
               :disabled="loginBusy"
-              @keyup.enter="verifyAndLogin"
+              @keyup.enter="doPasswordLogin"
             />
-            <n-button type="primary" :loading="loginBusy" @click="verifyAndLogin" block>
+            <n-button type="primary" :loading="loginBusy" @click="doPasswordLogin" block>
               登录
             </n-button>
-            <n-button quaternary @click="codeSent = false">重新发送</n-button>
+          </template>
+
+          <!-- Code verification login -->
+          <template v-else>
+            <template v-if="!codeSent">
+              <n-button type="primary" :loading="loginBusy" @click="sendCode" block>
+                发送验证码
+              </n-button>
+            </template>
+            <template v-else>
+              <n-input
+                v-model:value="code"
+                placeholder="验证码"
+                :disabled="loginBusy"
+                @keyup.enter="verifyAndLogin"
+              />
+              <n-button type="primary" :loading="loginBusy" @click="verifyAndLogin" block>
+                登录
+              </n-button>
+              <n-button quaternary @click="codeSent = false">重新发送</n-button>
+            </template>
           </template>
         </template>
 
