@@ -161,6 +161,7 @@ func TestDiscoverAPIError(t *testing.T) {
 // TestDiscoverBytedanceRealAPI hits the real corplink match endpoint with
 // company_name="bytedance" and verifies that DiscoverCompany resolves a
 // valid server URL and that LoginMethods can be fetched from it.
+// Skips gracefully when the external API is unreachable (e.g., CI without outbound network).
 func TestDiscoverBytedanceRealAPI(t *testing.T) {
 	ctx := context.Background()
 	sess := LoadSession(t.TempDir() + "/session.json")
@@ -168,6 +169,9 @@ func TestDiscoverBytedanceRealAPI(t *testing.T) {
 
 	t.Log("Step 1: DiscoverCompany with real API (company=bytedance)")
 	if err := cl.DiscoverCompany(ctx, "bytedance"); err != nil {
+		if strings.Contains(err.Error(), "timeout") || strings.Contains(err.Error(), "deadline exceeded") {
+			t.Skipf("DiscoverCompany skipped: real API unreachable in this environment: %v", err)
+		}
 		t.Fatalf("DiscoverCompany failed: %v", err)
 	}
 	if sess.Server == "" {
@@ -184,6 +188,9 @@ func TestDiscoverBytedanceRealAPI(t *testing.T) {
 	t.Log("Step 2: LoginMethods from resolved server")
 	info, err := cl.LoginMethods(ctx)
 	if err != nil {
+		if strings.Contains(err.Error(), "timeout") || strings.Contains(err.Error(), "deadline exceeded") {
+			t.Skipf("LoginMethods skipped: real API unreachable in this environment: %v", err)
+		}
 		t.Fatalf("LoginMethods failed: %v", err)
 	}
 	if len(info.Methods) == 0 {
