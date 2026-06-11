@@ -3,6 +3,10 @@ package corplink
 import (
 	"bytes"
 	"context"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/md5"
+	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/tls"
 	"encoding/json"
@@ -38,6 +42,8 @@ type Client struct {
 	httpClient       *http.Client
 	debugBody        bool
 	matchURLOverride string // non-empty overrides the default matchURL (used in tests)
+	platform         string // "ldap", "feilian_v1", or empty (default corplink)
+	dateOffsetSec    int    // delta between local time and server time (from Date header)
 }
 
 // NewClient creates a Client using the session's cookie jar.
@@ -59,6 +65,7 @@ func NewClientWithConfig(session *Session, cfg config.CorplinkConfig) *Client {
 			Timeout:   20 * time.Second,
 		},
 		debugBody: cfg.DebugHTTPBody,
+		platform:  cfg.Platform,
 	}
 }
 
@@ -74,6 +81,7 @@ func (c *Client) Configure(cfg config.CorplinkConfig) {
 		Timeout:   20 * time.Second,
 	}
 	c.debugBody = cfg.DebugHTTPBody
+	c.platform = cfg.Platform
 }
 
 func (c *Client) post(ctx context.Context, rawURL string, body, out any) error {
@@ -127,6 +135,7 @@ func (c *Client) do(ctx context.Context, method, rawURL string, body, out any) e
 					parts = append(parts, ck.Name+"="+ck.Value)
 					if ck.Name == "csrf-token" {
 						req.Header.Set("X-Csrf-Token", ck.Value)
+						req.Header.Set("csrf-token", ck.Value)
 					}
 				}
 				req.Header.Set("Cookie", strings.Join(parts, "; "))
@@ -143,6 +152,7 @@ func (c *Client) do(ctx context.Context, method, rawURL string, body, out any) e
 		return err
 	}
 	defer resp.Body.Close()
+	c.parseDateOffset(resp)
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -316,8 +326,9 @@ func (c *Client) DiscoverCompany(ctx context.Context, code string) error {
 
 // LoginMethodInfo holds available login methods and their verify types.
 type LoginMethodInfo struct {
-	Methods     []string `json:"methods"`
-	VerifyTypes []string `json:"verify_types"`
+	Methods         []string `json:"methods"`
+	VerifyTypes     []string `json:"verify_types"`
+	LoginEnableLDAP bool     `json:"login_enable_ldap"`
 }
 
 // LoginMethods returns available login method identifiers and verify types.
@@ -329,6 +340,7 @@ func (c *Client) LoginMethods(ctx context.Context) (*LoginMethodInfo, error) {
 		ScanCodeLoginEnable bool     `json:"scan_code_login_enable"`
 		ScanCodeTps         []string `json:"scan_code_tps"`
 		LoginVerifyType     []string `json:"login_verify_type"`
+		LoginEnableLDAP     bool     `json:"login_enable_ldap"`
 	}
 	var resp apiResp[loginSetting]
 	if err := c.get(ctx, c.apiURL("/api/login/setting"), &resp); err != nil {
@@ -375,32 +387,189 @@ func (c *Client) LoginMethods(ctx context.Context) (*LoginMethodInfo, error) {
 	}
 
 	return &LoginMethodInfo{
-		Methods:     methods,
-		VerifyTypes: d.LoginVerifyType,
+		Methods:         methods,
+		VerifyTypes:     d.LoginVerifyType,
+		LoginEnableLDAP: d.LoginEnableLDAP,
 	}, nil
 }
 
 // LoginWithPassword performs password-based login (used by bytedance and
 // other deployments where login_verify_type is "password").
 // Password is SHA256-hashed before sending if it is not already a 64-char hex string.
+// Supports "ldap" platform via config (no hashing, sends platform field).
+// On success the TOTP secret is extracted from the response and saved to the session.
 func (c *Client) LoginWithPassword(ctx context.Context, account, password string) error {
-	// Hash password if not already a 64-char hex string (SHA256 length)
-	if len(password) != 64 {
-		h := sha256.New()
-		h.Write([]byte(password))
-		password = fmt.Sprintf("%x", h.Sum(nil))
-	}
-
 	type loginReq struct {
 		Password string `json:"password"`
 		UserName string `json:"user_name"`
+		Platform string `json:"platform,omitempty"`
 	}
-	var loginResp apiResp[any]
-	if err := c.post(ctx, c.apiURL("/api/login"), loginReq{Password: password, UserName: account}, &loginResp); err != nil {
+	req := loginReq{UserName: account}
+
+	if c.platform == "ldap" {
+		req.Platform = "ldap"
+		req.Password = password
+	} else {
+		// Default corplink behavior: hash password if not already a 64-char hex string (SHA256 length)
+		if len(password) != 64 {
+			h := sha256.New()
+			h.Write([]byte(password))
+			password = fmt.Sprintf("%x", h.Sum(nil))
+		}
+		req.Password = password
+	}
+
+	type loginRespData struct {
+		URL string `json:"url"`
+	}
+	var loginResp apiResp[loginRespData]
+	if err := c.post(ctx, c.apiURL("/api/login"), req, &loginResp); err != nil {
 		return err
 	}
 	if loginResp.Code != 0 {
 		return fmt.Errorf("login: %s", loginResp.Message)
 	}
+	c.extractAndSaveTOTPSecret(ctx, loginResp.Data.URL)
 	return nil
+}
+
+// RequestOTP calls the /api/v2/p/otp endpoint to fetch a TOTP setup URI.
+// Used as a fallback when the login response doesn't include an otpauth URL.
+func (c *Client) RequestOTP(ctx context.Context) (string, error) {
+	type otpRespData struct {
+		URL  string `json:"url"`
+		Code string `json:"code"`
+	}
+	var resp apiResp[otpRespData]
+	if err := c.post(ctx, c.apiURL("/api/v2/p/otp"), struct{}{}, &resp); err != nil {
+		return "", err
+	}
+	if resp.Code != 0 {
+		return "", fmt.Errorf("request otp: %s", resp.Message)
+	}
+	return resp.Data.URL, nil
+}
+
+func (c *Client) extractAndSaveTOTPSecret(ctx context.Context, loginURL string) {
+	secret := ""
+	if loginURL != "" {
+		secret = ExtractTOTPSecretFromURL(loginURL)
+	}
+	if secret == "" {
+		// Fallback: request OTP endpoint directly
+		if otpURL, err := c.RequestOTP(ctx); err == nil && otpURL != "" {
+			secret = ExtractTOTPSecretFromURL(otpURL)
+		}
+	}
+	if secret != "" {
+		c.session.mu.Lock()
+		c.session.TOTPSecret = secret
+		c.session.mu.Unlock()
+		log.Printf("[corplink] saved TOTP secret to session")
+	}
+}
+
+// CorplinkAuthMethods holds per-user authentication methods returned by /api/lookup.
+type CorplinkAuthMethods struct {
+	MFA  bool     `json:"mfa"`
+	Auth []string `json:"auth"` // e.g. ["password", "email"]
+}
+
+// CorplinkLoginMethods queries the server for authentication methods available
+// to the given account (POST /api/lookup). This is used by some deployments
+// before attempting password/email login.
+func (c *Client) CorplinkLoginMethods(ctx context.Context, account string) (*CorplinkAuthMethods, error) {
+	type lookupReq struct {
+		ForgetPassword bool   `json:"forget_password"`
+		UserName       string `json:"user_name"`
+	}
+	type lookupResp struct {
+		MFA  bool     `json:"mfa"`
+		Auth []string `json:"auth"`
+	}
+	var resp apiResp[lookupResp]
+	if err := c.post(ctx, c.apiURL("/api/lookup"), lookupReq{
+		ForgetPassword: false,
+		UserName:       account,
+	}, &resp); err != nil {
+		return nil, err
+	}
+	if resp.Code != 0 {
+		return nil, fmt.Errorf("lookup login methods: %s", resp.Message)
+	}
+	return &CorplinkAuthMethods{
+		MFA:  resp.Data.MFA,
+		Auth: resp.Data.Auth,
+	}, nil
+}
+
+func (c *Client) parseDateOffset(resp *http.Response) {
+	date := resp.Header.Get("Date")
+	if date == "" {
+		return
+	}
+	serverTime, err := http.ParseTime(date)
+	if err != nil {
+		log.Printf("[corplink] failed to parse Date header: %v", err)
+		return
+	}
+	offset := int(serverTime.Sub(time.Now()).Seconds())
+	c.mu.Lock()
+	c.dateOffsetSec = offset
+	c.mu.Unlock()
+	log.Printf("[corplink] server time offset: %d seconds", offset)
+}
+
+// LoginV1 performs feilian_v1 password-based login (POST /api/v1/login).
+// Password is AES-256-CBC encrypted before sending, matching the official client.
+func (c *Client) LoginV1(ctx context.Context, account, password string) error {
+	enc := feilianV1EncryptPassword(password)
+	type loginReq struct {
+		LoginScene  string `json:"login_scene"`
+		AccountType string `json:"account_type"`
+		Account     string `json:"account"`
+		Password    string `json:"password"`
+	}
+	type loginRespData struct {
+		Result string `json:"result"`
+	}
+	var resp apiResp[loginRespData]
+	if err := c.post(ctx, c.apiURL("/api/v1/login")+"&client_source=FeiLian", loginReq{
+		LoginScene:  "feilian",
+		AccountType: "userid",
+		Account:     account,
+		Password:    enc,
+	}, &resp); err != nil {
+		return err
+	}
+	if resp.Code != 0 {
+		return fmt.Errorf("v1 login: %s", resp.Message)
+	}
+	if resp.Data.Result != "success" {
+		return fmt.Errorf("v1 login returned unexpected result: %s", resp.Data.Result)
+	}
+	c.extractAndSaveTOTPSecret(ctx, "")
+	return nil
+}
+
+// feilianV1EncryptPassword encrypts a password the way the official feilian client does:
+//   KEY = hex(md5("9007199254740991"))   (32 ascii bytes)
+//   IV  = hex(sha1(KEY))[:16]            (16 ascii bytes)
+//   out = lower_hex(AES-256-CBC(KEY, IV, PKCS7(password)))
+func feilianV1EncryptPassword(password string) string {
+	key := fmt.Sprintf("%x", md5.Sum([]byte("9007199254740991")))
+	iv := fmt.Sprintf("%x", sha1.Sum([]byte(key)))
+	iv = iv[:16]
+
+	block, _ := aes.NewCipher([]byte(key))
+	padded := pkcs7Pad([]byte(password), aes.BlockSize)
+	ciphertext := make([]byte, len(padded))
+	cipher.NewCBCEncrypter(block, []byte(iv)).CryptBlocks(ciphertext, padded)
+	return fmt.Sprintf("%x", ciphertext)
+}
+
+func pkcs7Pad(data []byte, blockSize int) []byte {
+	padding := blockSize - len(data)%blockSize
+	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+	return append(data, padtext...)
 }

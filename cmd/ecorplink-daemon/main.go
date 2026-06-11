@@ -361,7 +361,13 @@ func dispatchHandler(ctx context.Context, cmd daemonipc.Cmd, cl *corplink.Client
 		return daemonipc.Response{OK: true}
 
 	case daemonipc.ActionLoginPassword:
-		if err := cl.LoginWithPassword(ctx, cmd.Account, cmd.Password); err != nil {
+		var err error
+		if cfg.Corplink.Platform == "feilian_v1" {
+			err = cl.LoginV1(ctx, cmd.Account, cmd.Password)
+		} else {
+			err = cl.LoginWithPassword(ctx, cmd.Account, cmd.Password)
+		}
+		if err != nil {
 			return daemonipc.Response{OK: false, Error: err.Error()}
 		}
 		cm.Session().Save() //nolint:errcheck

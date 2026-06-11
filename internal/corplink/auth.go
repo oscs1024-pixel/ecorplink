@@ -16,8 +16,9 @@ func (c *Client) SendCode(ctx context.Context, codeType, account string) error {
 	}
 	var resp apiResp[any]
 	if err := c.post(ctx, c.apiURL("/api/login/code/send"), req{
-		CodeType: codeType,
-		UserName: account,
+		ForgetPassword: false,
+		CodeType:       codeType,
+		UserName:       account,
 	}, &resp); err != nil {
 		return err
 	}
@@ -28,6 +29,7 @@ func (c *Client) SendCode(ctx context.Context, codeType, account string) error {
 }
 
 // VerifyCode submits a verification code and completes login.
+// On success the TOTP secret is extracted from the response and saved to the session.
 func (c *Client) VerifyCode(ctx context.Context, codeType, account, code string) error {
 	type req struct {
 		ForgetPassword bool   `json:"forget_password"`
@@ -35,17 +37,22 @@ func (c *Client) VerifyCode(ctx context.Context, codeType, account, code string)
 		UserName       string `json:"user_name"`
 		Code           string `json:"code"`
 	}
-	var resp apiResp[any]
+	type verifyRespData struct {
+		URL string `json:"url"`
+	}
+	var resp apiResp[verifyRespData]
 	if err := c.post(ctx, c.apiURL("/api/login/code/verify"), req{
-		CodeType: codeType,
-		UserName: account,
-		Code:     code,
+		ForgetPassword: false,
+		CodeType:       codeType,
+		UserName:       account,
+		Code:           code,
 	}, &resp); err != nil {
 		return err
 	}
 	if resp.Code != 0 {
 		return fmt.Errorf("verify code: %s", resp.Message)
 	}
+	c.extractAndSaveTOTPSecret(ctx, resp.Data.URL)
 	return nil
 }
 
@@ -78,9 +85,13 @@ func (c *Client) GetQRCode(ctx context.Context) (*QRCodeResult, error) {
 }
 
 // PollQRLogin polls until QR code is scanned and login is complete.
+// On success the TOTP secret is extracted from the response and saved to the session.
 func (c *Client) PollQRLogin(ctx context.Context, token string) error {
 	type req struct {
 		Token string `json:"token"`
+	}
+	type qrRespData struct {
+		URL string `json:"url"`
 	}
 	deadline := time.Now().Add(3 * time.Minute)
 	for {
@@ -92,11 +103,12 @@ func (c *Client) PollQRLogin(ctx context.Context, token string) error {
 			return ctx.Err()
 		case <-time.After(2 * time.Second):
 		}
-		var resp apiResp[any]
+		var resp apiResp[qrRespData]
 		if err := c.post(ctx, c.apiURL("/api/tpslogin/token/check"), req{Token: token}, &resp); err != nil {
 			continue
 		}
 		if resp.Code == 0 {
+			c.extractAndSaveTOTPSecret(ctx, resp.Data.URL)
 			return nil
 		}
 		if resp.Code == 101 {

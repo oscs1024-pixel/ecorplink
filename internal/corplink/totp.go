@@ -6,12 +6,19 @@ import (
 	"encoding/base32"
 	"encoding/binary"
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 )
 
 // TOTP generates a 6-digit TOTP code from a base32-encoded secret.
 func TOTP(secret string) (string, error) {
+	return TOTPWithOffset(secret, 0)
+}
+
+// TOTPWithOffset generates a 6-digit TOTP code from a base32-encoded secret,
+// applying a time offset (in seconds) to correct for clock drift against the server.
+func TOTPWithOffset(secret string, offsetSec int) (string, error) {
 	secret = strings.ToUpper(strings.ReplaceAll(secret, " ", ""))
 	if rem := len(secret) % 8; rem != 0 {
 		secret += strings.Repeat("=", 8-rem)
@@ -20,7 +27,7 @@ func TOTP(secret string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("totp: decode secret: %w", err)
 	}
-	counter := uint64(time.Now().Unix()) / 30
+	counter := uint64(time.Now().Unix()+int64(offsetSec)) / 30
 	buf := make([]byte, 8)
 	binary.BigEndian.PutUint64(buf, counter)
 	mac := hmac.New(sha1.New, key)
@@ -32,4 +39,16 @@ func TOTP(secret string) (string, error) {
 		uint32(h[offset+2])<<8 |
 		uint32(h[offset+3])
 	return fmt.Sprintf("%06d", code%1_000_000), nil
+}
+
+// ExtractTOTPSecretFromURL parses an otpauth:// URI and returns the secret parameter.
+func ExtractTOTPSecretFromURL(uri string) string {
+	u, err := url.Parse(uri)
+	if err != nil {
+		return ""
+	}
+	if u.Scheme != "otpauth" {
+		return ""
+	}
+	return u.Query().Get("secret")
 }

@@ -25,6 +25,7 @@ type Config struct {
 // CorplinkConfig holds corplink/飞连 connection settings.
 type CorplinkConfig struct {
 	CompanyName        string `json:"company_name"`
+	Platform           string `json:"platform"` // "ldap", "feilian_v1", or empty (default corplink)
 	InsecureSkipVerify bool   `json:"insecure_skip_verify"`
 	DebugHTTPBody      bool   `json:"debug_http_body"`
 }

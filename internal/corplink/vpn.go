@@ -79,8 +79,11 @@ func (c *Client) GetWGConfig(ctx context.Context, node VPNNode, clientPublicKeyB
 
 	otp := ""
 	if totpSecret != "" {
+		c.mu.RLock()
+		offset := c.dateOffsetSec
+		c.mu.RUnlock()
 		var err error
-		otp, err = TOTP(totpSecret)
+		otp, err = TOTPWithOffset(totpSecret, offset)
 		if err != nil {
 			return nil, fmt.Errorf("totp: %w", err)
 		}
