@@ -261,6 +261,30 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
     (cd "$FRONTEND_DIR" && npm install)
   fi
 
+  log "Building embedded daemon for $TARGET/$ARCH"
+  mkdir -p "$ROOT_DIR/cmd/gui/daemon"
+  DAEMON_BIN_NAME="ecorplink-daemon"
+  [ "$TARGET" = "windows" ] && DAEMON_BIN_NAME="ecorplink-daemon.exe"
+  (cd "$ROOT_DIR" && CGO_ENABLED=0 GOOS="$TARGET" GOARCH="$ARCH" go build -trimpath -ldflags "-s -w -X main.Version=$VERSION" -o "cmd/gui/daemon/$DAEMON_BIN_NAME" ./cmd/ecorplink-daemon)
+
+  log "Generating daemon SHA256 constant"
+  DAEMON_SHA=""
+  if command -v sha256sum >/dev/null 2>&1; then
+    DAEMON_SHA="$(sha256sum "$ROOT_DIR/cmd/gui/daemon/$DAEMON_BIN_NAME" | awk '{print $1}')"
+  elif command -v shasum >/dev/null 2>&1; then
+    DAEMON_SHA="$(shasum -a 256 "$ROOT_DIR/cmd/gui/daemon/$DAEMON_BIN_NAME" | awk '{print $1}')"
+  elif command -v certutil >/dev/null 2>&1; then
+    DAEMON_SHA="$(certutil -hashfile "$ROOT_DIR/cmd/gui/daemon/$DAEMON_BIN_NAME" SHA256 | awk 'NR == 2 { gsub(/[[:space:]]/, ""); print tolower($0) }')"
+  else
+    printf 'error: sha256sum, shasum, or certutil is required\n' >&2
+    exit 1
+  fi
+  cat > "$ROOT_DIR/cmd/gui/daemon_sha.go" <<EOF
+package main
+
+const embeddedDaemonSHA256 = "$DAEMON_SHA"
+EOF
+
   log "Building Wails GUI for $TARGET/$ARCH"
   (cd "$ROOT_DIR" && GOOS="$TARGET" GOARCH="$ARCH" VERSION="$VERSION" WAILS="$WAILS_BIN" APP_BIN="$APP_BIN" "$WAILS_BIN" build)
 

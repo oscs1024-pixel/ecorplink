@@ -2,11 +2,7 @@
 
 package daemonipc
 
-import (
-	"fmt"
-	"net"
-	"runtime"
-)
+import "net"
 
 func validatePeer(conn net.Conn, socketDir string) error {
 	return nil
