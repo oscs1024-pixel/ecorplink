@@ -13,8 +13,10 @@ func validatePeer(conn net.Conn, socketDir string) error {
 }
 
 func setSocketOwnerToDirOwner(socketPath string) error {
-	if runtime.GOOS == "windows" {
-		return nil
-	}
-	return fmt.Errorf("peer credentials are not implemented on %s", runtime.GOOS)
+	return ChownToDirOwner(socketPath)
+}
+
+// ChownToDirOwner is a no-op on platforms that do not support Unix ownership.
+func ChownToDirOwner(path string) error {
+	return nil
 }

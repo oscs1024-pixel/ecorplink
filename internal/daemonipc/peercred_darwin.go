@@ -63,10 +63,16 @@ func dirOwnerUID(path string) (uint32, bool) {
 }
 
 func setSocketOwnerToDirOwner(socketPath string) error {
+	return ChownToDirOwner(socketPath)
+}
+
+// ChownToDirOwner changes the owner of path to match the owner of its parent
+// directory. It is a no-op when not running as root.
+func ChownToDirOwner(path string) error {
 	if os.Getuid() != 0 {
 		return nil
 	}
-	info, err := os.Stat(filepath.Dir(socketPath))
+	info, err := os.Stat(filepath.Dir(path))
 	if err != nil {
 		return err
 	}
@@ -74,5 +80,5 @@ func setSocketOwnerToDirOwner(socketPath string) error {
 	if !ok {
 		return nil
 	}
-	return os.Chown(socketPath, int(st.Uid), int(st.Gid))
+	return os.Chown(path, int(st.Uid), int(st.Gid))
 }

@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+
+	"ecorplink/internal/daemonipc"
 )
 
 type Source struct {
@@ -61,6 +63,7 @@ func Ensure(src Source, dst string) (string, error) {
 			return "", fmt.Errorf("chmod daemon: %w", err)
 		}
 	}
+	daemonipc.ChownToDirOwner(dst) //nolint:errcheck
 	return dst, nil
 }
 

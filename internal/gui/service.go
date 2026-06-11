@@ -39,6 +39,9 @@ func NewService(opts Options) *Service {
 	if opts.Runner == nil {
 		opts.Runner = ExecRunner{Timeout: 15 * time.Second}
 	}
+	// Ensure the data directory is created by the GUI (normal user) so that
+	// root-owned daemon does not create it with root ownership.
+	os.MkdirAll(defaultEcorplinkDir(), 0755) //nolint:errcheck
 	return &Service{
 		daemonPath: opts.DaemonPath,
 		configPath: opts.ConfigPath,

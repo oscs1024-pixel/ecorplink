@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"ecorplink/internal/daemonipc"
 )
 
 // WritePidFile writes the PID to a file.
@@ -13,7 +15,11 @@ func WritePidFile(path string, pid int) error {
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
 	}
-	return os.WriteFile(path, []byte(strconv.Itoa(pid)+"\n"), 0644)
+	if err := os.WriteFile(path, []byte(strconv.Itoa(pid)+"\n"), 0644); err != nil {
+		return err
+	}
+	daemonipc.ChownToDirOwner(path) //nolint:errcheck
+	return nil
 }
 
 // ReadPidFile reads the PID from a file.
