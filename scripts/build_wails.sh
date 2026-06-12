@@ -6,7 +6,7 @@ FRONTEND_DIR="$ROOT_DIR/frontend"
 APP_NAME="${APP_NAME:-ECorpLink}"
 APP_BIN="${APP_BIN:-ecorplink-gui}"
 BUNDLE_ID="${BUNDLE_ID:-com.ecorplink.app}"
-LOGO_PATH="${LOGO_PATH:-$ROOT_DIR/packaging/logo.jpeg}"
+LOGO_PATH="${LOGO_PATH:-$ROOT_DIR/packaging/logo.png}"
 DIST_DIR="$ROOT_DIR/dist"
 BUILD_DIR="$ROOT_DIR/build/package"
 VOL_NAME="${VOL_NAME:-$APP_NAME}"
@@ -119,7 +119,7 @@ cross_test_packages() {
 
 usage() {
   cat <<EOF
-Usage: scripts/build_wails.sh [--target darwin|linux|windows] [--arch amd64|arm64|386|arm] [--skip-build] [--skip-tests] [--clean] [--doctor] [--logo /path/logo.jpeg]
+Usage: scripts/build_wails.sh [--target darwin|linux|windows] [--arch amd64|arm64|386|arm] [--skip-build] [--skip-tests] [--clean] [--doctor] [--logo /path/logo.png]
 
 Environment:
   APP_NAME=ECorpLink
@@ -129,7 +129,7 @@ Environment:
   TARGET=<target OS; defaults to host OS>
   ARCH=<target arch; defaults to host arch>
   WAILS=/path/to/wails3
-  LOGO_PATH=packaging/logo.jpeg
+  LOGO_PATH=packaging/logo.png
   VOL_NAME=ECorpLink
 
 Output:
