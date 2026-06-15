@@ -45,6 +45,13 @@ async function uninstallService() {
   await refreshService()
 }
 
+async function restartDaemon() {
+  const res = await api.restartDaemon(store.configPath)
+  setResult(res)
+  await refreshService()
+  await store.refresh()
+}
+
 function setResult(res: CommandResult) {
   result.value = res.summary || res.details || ''
   resultDetails.value = res.details && res.details !== result.value ? res.details : ''
@@ -67,9 +74,27 @@ async function doApplyRecommendedRules() {
   rulesBusy.value = true
   rulesMsg.value = ''
   try {
-    const res = await api.applyRecommendedRules(store.configPath)
+    let res = await api.applyRecommendedRules(store.configPath)
+    if (!res.ok) {
+      const restart = await api.restartDaemon(store.configPath)
+      if (restart.ok) {
+        res = await api.applyRecommendedRules(store.configPath)
+      }
+    }
     rulesMsg.value = res.summary || (res.ok ? '完成' : '失败')
-    if (res.ok) await store.loadConfig(store.configPath)
+    if (res.ok) {
+      await store.loadConfig(store.configPath)
+      await store.refresh()
+      if (store.isRunning) {
+        const reload = await api.reloadConfig()
+        if (!reload.ok) {
+          const restart = await api.restartDaemon(store.configPath)
+          rulesMsg.value = restart.ok
+            ? `${rulesMsg.value}，daemon 已重启`
+            : `${rulesMsg.value}，但 daemon 重载失败：${reload.summary || reload.details || '未知错误'}`
+        }
+      }
+    }
   } catch (e) {
     rulesMsg.value = String(e)
   } finally {
@@ -110,6 +135,7 @@ async function doLogout() {
         <div class="button-row service-actions">
           <n-button type="primary" @click="installService">安装</n-button>
           <n-button @click="uninstallService">卸载</n-button>
+          <n-button @click="restartDaemon">重启 daemon</n-button>
         </div>
         <p v-if="result" class="muted service-result">{{ result }}</p>
         <details v-if="resultDetails" class="command-details">

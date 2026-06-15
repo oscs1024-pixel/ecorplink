@@ -120,6 +120,42 @@ func TestLoginMethodsOnlyEmail(t *testing.T) {
 	t.Logf("Methods: %v", info.Methods)
 }
 
+func TestLoginMethodsExposePasswordAsSeparateMethod(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/login/setting" {
+			t.Fatalf("unexpected path: %s", r.URL.Path)
+		}
+		json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
+			"code": 0,
+			"data": map[string]any{
+				"login_orders":      []string{"ldap", "feilian"},
+				"login_account":     []string{"mobile"},
+				"login_verify_type": []string{"password", "mobile"},
+				"login_enable_ldap": true,
+			},
+		})
+	}))
+	defer ts.Close()
+
+	sess := LoadSession(t.TempDir() + "/session.json")
+	sess.Server = ts.URL
+	cl := NewClient(sess)
+
+	info, err := cl.LoginMethods(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"password", "mobile"}
+	if len(info.Methods) != len(want) {
+		t.Fatalf("methods = %v, want %v", info.Methods, want)
+	}
+	for i := range want {
+		if info.Methods[i] != want[i] {
+			t.Fatalf("methods = %v, want %v", info.Methods, want)
+		}
+	}
+}
+
 func TestDiscoverEmptyDomain(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck

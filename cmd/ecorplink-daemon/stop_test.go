@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"net"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -153,6 +155,100 @@ func TestShouldSetupSystemDNSHonorsConfig(t *testing.T) {
 	cfg.DNS.SystemHijack = true
 	if !shouldSetupSystemDNS(cfg) {
 		t.Fatal("system_hijack=true should set system DNS")
+	}
+}
+
+func TestLoadOrCreateConfigRepairsOwnershipForDefaultFile(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	var repaired []string
+	orig := repairOwnership
+	repairOwnership = func(path string) error {
+		repaired = append(repaired, path)
+		return nil
+	}
+	defer func() {
+		repairOwnership = orig
+	}()
+
+	cfg, err := loadOrCreateConfig(path)
+	if err != nil {
+		t.Fatalf("loadOrCreateConfig error: %v", err)
+	}
+	if cfg == nil {
+		t.Fatal("loadOrCreateConfig returned nil config")
+	}
+	if _, err := os.Stat(path); err != nil {
+		t.Fatalf("default config was not written: %v", err)
+	}
+	want := []string{filepath.Dir(path), path}
+	if len(repaired) != len(want) {
+		t.Fatalf("repair calls = %v, want %v", repaired, want)
+	}
+	for i := range want {
+		if repaired[i] != want[i] {
+			t.Fatalf("repair calls = %v, want %v", repaired, want)
+		}
+	}
+}
+
+func TestLoadOrCreateConfigRepairsOwnershipForExistingFile(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "config.json")
+	if err := os.WriteFile(path, []byte(`{"rules":[{"enabled":true,"type":"GEOIP","value":"CN","policy":"DIRECT"}]}`), 0644); err != nil {
+		t.Fatal(err)
+	}
+	var repaired []string
+	orig := repairOwnership
+	repairOwnership = func(path string) error {
+		repaired = append(repaired, path)
+		return nil
+	}
+	defer func() {
+		repairOwnership = orig
+	}()
+
+	cfg, err := loadOrCreateConfig(path)
+	if err != nil {
+		t.Fatalf("loadOrCreateConfig error: %v", err)
+	}
+	if cfg == nil {
+		t.Fatal("loadOrCreateConfig returned nil config")
+	}
+	want := []string{dir, path}
+	if len(repaired) != len(want) {
+		t.Fatalf("repair calls = %v, want %v", repaired, want)
+	}
+	for i := range want {
+		if repaired[i] != want[i] {
+			t.Fatalf("repair calls = %v, want %v", repaired, want)
+		}
+	}
+}
+
+func TestSetupLoggingRepairsLogDirAndFileOwnership(t *testing.T) {
+	logFile := filepath.Join(t.TempDir(), "logs", "ecorplink.log")
+	var repaired []string
+	orig := repairOwnership
+	repairOwnership = func(path string) error {
+		repaired = append(repaired, path)
+		return nil
+	}
+	defer func() {
+		repairOwnership = orig
+	}()
+
+	cfg := config.DefaultConfig()
+	cfg.Log.File = logFile
+	setupLogging(cfg)
+
+	want := []string{filepath.Dir(logFile), logFile}
+	if len(repaired) != len(want) {
+		t.Fatalf("repair calls = %v, want %v", repaired, want)
+	}
+	for i := range want {
+		if repaired[i] != want[i] {
+			t.Fatalf("repair calls = %v, want %v", repaired, want)
+		}
 	}
 }
 

@@ -31,12 +31,13 @@ const qrPolling = ref(false)
 let qrPollTimer: number | undefined
 
 const isQRMethod = computed(() => selectedMethod.value === 'lark')
-const isPasswordVerify = computed(() => verifyTypes.value.includes('password'))
+const isPasswordMethod = computed(() => selectedMethod.value === 'password')
 
 function methodLabel(m: string): string {
   const labels: Record<string, string> = {
     email: '邮箱验证码',
     mobile: '手机验证码',
+    password: '账号密码登录',
     lark: '飞书扫码登录',
   }
   return labels[m] ?? m
@@ -234,12 +235,12 @@ function goBack() {
         <template v-else>
           <n-input
             v-model:value="account"
-            :placeholder="selectedMethod === 'mobile' ? '手机号' : '邮箱'"
+            :placeholder="isPasswordMethod ? '账号 / 邮箱 / 手机号' : (selectedMethod === 'mobile' ? '手机号' : '邮箱')"
             :disabled="loginBusy"
           />
 
           <!-- Password login (e.g. bytedance) -->
-          <template v-if="isPasswordVerify">
+          <template v-if="isPasswordMethod">
             <n-input
               v-model:value="password"
               type="password"

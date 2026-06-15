@@ -365,7 +365,14 @@ func (c *Client) LoginMethods(ctx context.Context) (*LoginMethodInfo, error) {
 
 	for _, order := range d.LoginOrders {
 		switch order {
+		case "ldap":
+			if d.LoginEnableLDAP && slices.Contains(d.LoginVerifyType, "password") {
+				add("password")
+			}
 		case "feilian", "feilian_v1", "mobile_auth":
+			if slices.Contains(d.LoginVerifyType, "password") {
+				add("password")
+			}
 			for _, acc := range d.LoginAccount {
 				switch acc {
 				case "email":

@@ -36,6 +36,7 @@ var configPath = flag.String("c", "", "config file path")
 var pidFilePathFlag = flag.String("pid-file", "", "pid file path")
 var cleanupRoutesAndDNS = cleanupPersistedRoutes
 var activeConnection connectionSupervisor
+var repairOwnership = daemonipc.ChownToDirOwner
 
 type loginCapabilities struct {
 	VerifyTypes     []string
@@ -314,20 +315,10 @@ func run() error {
 }
 
 func runWithContext(ctx context.Context) error {
-	cfg, err := config.LoadConfig(*configPath)
+	ensureEcorplinkDir()
+	cfg, err := loadOrCreateConfig(*configPath)
 	if err != nil {
-		// First run: config file not yet created — write default and continue.
-		if errors.Is(err, os.ErrNotExist) && *configPath != "" {
-			cfg = config.DefaultConfig()
-			if dir := filepath.Dir(*configPath); dir != "." {
-				os.MkdirAll(dir, 0755) //nolint:errcheck
-			}
-			if data, merr := json.MarshalIndent(cfg, "", "  "); merr == nil {
-				os.WriteFile(*configPath, append(data, '\n'), 0644) //nolint:errcheck
-			}
-		} else {
-			return fmt.Errorf("load config: %w", err)
-		}
+		return fmt.Errorf("load config: %w", err)
 	}
 	setupLogging(cfg)
 	log.Printf("[main] ecorplink daemon starting, pid: %d", os.Getpid())
@@ -374,6 +365,45 @@ func ecorplinkDir() string {
 		return filepath.Join(".", ".ecorplink")
 	}
 	return filepath.Join(home, ".ecorplink")
+}
+
+func ensureEcorplinkDir() {
+	dir := ecorplinkDir()
+	if err := os.MkdirAll(dir, 0755); err == nil {
+		repairOwnership(dir) //nolint:errcheck
+	}
+}
+
+func loadOrCreateConfig(path string) (*config.Config, error) {
+	cfg, err := config.LoadConfig(path)
+	if err == nil {
+		if path != "" {
+			if dir := filepath.Dir(path); dir != "." {
+				repairOwnership(dir) //nolint:errcheck
+			}
+			repairOwnership(path) //nolint:errcheck
+		}
+		return cfg, nil
+	}
+	if !errors.Is(err, os.ErrNotExist) || path == "" {
+		return nil, err
+	}
+	cfg = config.DefaultConfig()
+	if dir := filepath.Dir(path); dir != "." {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return nil, err
+		}
+		repairOwnership(dir) //nolint:errcheck
+	}
+	data, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	if err := os.WriteFile(path, append(data, '\n'), 0644); err != nil {
+		return nil, err
+	}
+	repairOwnership(path) //nolint:errcheck
+	return cfg, nil
 }
 
 func buildHandler(cfg *config.Config, cm *corplink.Manager, vm *vpnpkg.Manager, shutdown func()) daemonipc.Handler {
@@ -825,10 +855,12 @@ func setupLogging(cfg *config.Config) {
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		return
 	}
+	repairOwnership(logDir) //nolint:errcheck
 	// Pre-create log file owner-only; debug logs can include operational details.
 	if f, err := os.OpenFile(logFile, os.O_CREATE|os.O_RDONLY, 0600); err == nil {
 		f.Close()
 	}
+	repairOwnership(logFile) //nolint:errcheck
 	// If running as root via sudo, restore ownership to the original user.
 	fixOwnership(logDir, logFile)
 
