@@ -83,6 +83,10 @@ func (d *Direct) Init() error {
 	if err != nil {
 		return fmt.Errorf("outbound: failed to list interfaces: %w", err)
 	}
+	if iface, err := defaultRouteInterface(); err == nil && iface != nil && isPhysical(*iface) {
+		d.iface = iface
+		return nil
+	}
 	for _, iface := range ifaces {
 		iface := iface
 		if isPhysical(iface) {

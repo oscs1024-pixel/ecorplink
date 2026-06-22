@@ -14,6 +14,12 @@ func addScopedHostRoute(ip, iface string) error {
 	if err != nil {
 		return err
 	}
+	if gateway != nil && !gatewayReachableOnInterface(gateway, iface) {
+		gateway = nil
+		if fallback, ferr := defaultGatewayForInterface(iface); ferr == nil && fallback != nil {
+			gateway = fallback
+		}
+	}
 	if gateway == nil && !isTunnelInterface(iface) {
 		return fmt.Errorf("no gateway for physical iface %s", iface)
 	}
@@ -53,6 +59,22 @@ func scopedGateway(ip, iface string) (net.IP, error) {
 	if err != nil {
 		return nil, fmt.Errorf("route get %s ifscope %s: %s: %w", ip, iface, out, err)
 	}
+	return parseRouteGateway(out), nil
+}
+
+func defaultGatewayForInterface(iface string) (net.IP, error) {
+	out, err := exec.Command("route", "-n", "get", "default").CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("route get default: %s: %w", out, err)
+	}
+	gotIface := parseRouteInterface(out)
+	if gotIface != "" && gotIface != iface {
+		return nil, nil
+	}
+	return parseRouteGateway(out), nil
+}
+
+func parseRouteGateway(out []byte) net.IP {
 	for _, line := range strings.Split(string(out), "\n") {
 		line = strings.TrimSpace(line)
 		if !strings.HasPrefix(line, "gateway:") {
@@ -60,11 +82,45 @@ func scopedGateway(ip, iface string) (net.IP, error) {
 		}
 		gw := net.ParseIP(strings.TrimSpace(strings.TrimPrefix(line, "gateway:")))
 		if gw == nil {
-			return nil, nil
+			return nil
 		}
-		return gw, nil
+		return gw
 	}
-	return nil, nil
+	return nil
+}
+
+func parseRouteInterface(out []byte) string {
+	for _, line := range strings.Split(string(out), "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "interface:") {
+			return strings.TrimSpace(strings.TrimPrefix(line, "interface:"))
+		}
+	}
+	return ""
+}
+
+func gatewayReachableOnInterface(gateway net.IP, ifaceName string) bool {
+	if gateway == nil || gateway.To4() == nil {
+		return false
+	}
+	iface, err := net.InterfaceByName(ifaceName)
+	if err != nil {
+		return false
+	}
+	addrs, err := iface.Addrs()
+	if err != nil {
+		return false
+	}
+	for _, addr := range addrs {
+		ipNet, ok := addr.(*net.IPNet)
+		if !ok || ipNet.IP.To4() == nil {
+			continue
+		}
+		if ipNet.Contains(gateway) {
+			return true
+		}
+	}
+	return false
 }
 
 func isTunnelInterface(iface string) bool {

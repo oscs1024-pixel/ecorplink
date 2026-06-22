@@ -336,7 +336,10 @@ case "$TARGET" in
       double=$((size * 2))
       sips -s format png -z "$double" "$double" "$LOGO_PATH" --out "$ICONSET_DIR/icon_${size}x${size}@2x.png" >/dev/null
     done
-    iconutil -c icns "$ICONSET_DIR" -o "$APP_DIR/Contents/Resources/AppIcon.icns"
+    if ! iconutil -c icns "$ICONSET_DIR" -o "$APP_DIR/Contents/Resources/AppIcon.icns"; then
+      printf 'warning: iconutil failed; continuing with PNG app icon fallback\n' >&2
+      install -m 0644 "$LOGO_PATH" "$APP_DIR/Contents/Resources/AppIcon.png"
+    fi
 
     install -m 0755 "$ROOT_DIR/bin/$BINARY_NAME" "$APP_DIR/Contents/MacOS/$APP_BIN"
     cat > "$APP_DIR/Contents/Info.plist" <<EOF
