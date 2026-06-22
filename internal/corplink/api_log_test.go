@@ -1,6 +1,8 @@
 package corplink
 
 import (
+	"context"
+	"net"
 	"net/http"
 	"strings"
 	"testing"
@@ -50,5 +52,31 @@ func TestClientTLSAndBodyLoggingFollowConfig(t *testing.T) {
 	}
 	if !cl.httpBodyLoggingEnabled() {
 		t.Fatal("debug_http_body=true should enable HTTP body logging")
+	}
+}
+
+func TestClientSetDialContextPreservedAcrossConfigure(t *testing.T) {
+	cl := NewClientWithConfig(LoadSession(t.TempDir()+"/session.json"), config.CorplinkConfig{
+		InsecureSkipVerify: false,
+	})
+	dial := func(ctx context.Context, network, address string) (net.Conn, error) {
+		return nil, context.Canceled
+	}
+
+	cl.SetDialContext(dial)
+	cl.Configure(config.CorplinkConfig{InsecureSkipVerify: true})
+
+	tr, ok := cl.httpClient.Transport.(*http.Transport)
+	if !ok {
+		t.Fatalf("transport = %T, want *http.Transport", cl.httpClient.Transport)
+	}
+	if tr.DialContext == nil {
+		t.Fatal("custom DialContext was not preserved")
+	}
+	if _, err := tr.DialContext(context.Background(), "tcp", "example.test:443"); err != context.Canceled {
+		t.Fatalf("DialContext error = %v, want context.Canceled", err)
+	}
+	if tr.TLSClientConfig == nil || !tr.TLSClientConfig.InsecureSkipVerify {
+		t.Fatal("Configure should still apply TLS settings")
 	}
 }

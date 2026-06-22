@@ -282,3 +282,33 @@ func TestConnectionSupervisorCancelsPreviousSession(t *testing.T) {
 		t.Fatal("current connection context was not cancelled by Stop")
 	}
 }
+
+func TestResolveHostnameWithResolverUsesProvidedResolver(t *testing.T) {
+	resolver := &fakeHostResolver{
+		addrs: map[string][]string{"control.example.test": {"203.0.113.77"}},
+	}
+
+	got, err := resolveHostnameWithResolver(context.Background(), "https://control.example.test/api", resolver)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != "203.0.113.77" {
+		t.Fatalf("resolved host = %q, want 203.0.113.77", got)
+	}
+	if resolver.queries[0] != "control.example.test" {
+		t.Fatalf("resolver queries = %v, want control.example.test", resolver.queries)
+	}
+}
+
+type fakeHostResolver struct {
+	addrs   map[string][]string
+	queries []string
+}
+
+func (r *fakeHostResolver) LookupHost(ctx context.Context, host string) ([]string, error) {
+	r.queries = append(r.queries, host)
+	if addrs := r.addrs[host]; len(addrs) > 0 {
+		return addrs, nil
+	}
+	return nil, os.ErrNotExist
+}

@@ -3,11 +3,13 @@ package daemonipc
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net"
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
 
 // Handler processes a command and returns a response.
@@ -28,6 +30,10 @@ func NewServer(socketPath string, handler Handler) *Server {
 
 // Start begins listening. Non-blocking.
 func (s *Server) Start() error {
+	if conn, err := net.DialTimeout("unix", s.path, time.Second); err == nil {
+		conn.Close() //nolint:errcheck
+		return fmt.Errorf("daemon socket already active: %s", s.path)
+	}
 	os.Remove(s.path) //nolint:errcheck
 	ln, err := net.Listen("unix", s.path)
 	if err != nil {

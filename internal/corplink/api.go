@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"slices"
@@ -42,6 +43,8 @@ type Client struct {
 	mu               sync.RWMutex
 	httpClient       *http.Client
 	debugBody        bool
+	insecureTLS      bool
+	dialContext      func(ctx context.Context, network, address string) (net.Conn, error)
 	matchURLOverride string // non-empty overrides the default matchURL (used in tests)
 	platform         string // "ldap", "feilian_v1", or empty (default corplink)
 	dateOffsetSec    int    // delta between local time and server time (from Date header)
@@ -55,34 +58,44 @@ func NewClient(session *Session) *Client {
 // NewClientWithConfig creates a Client using the session's cookie jar and
 // Corplink-specific transport/logging settings.
 func NewClientWithConfig(session *Session, cfg config.CorplinkConfig) *Client {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: cfg.InsecureSkipVerify}, //nolint:gosec // configurable for self-signed deployments
+	c := &Client{
+		session:     session,
+		debugBody:   cfg.DebugHTTPBody,
+		insecureTLS: cfg.InsecureSkipVerify,
+		platform:    cfg.Platform,
 	}
-	return &Client{
-		session: session,
-		httpClient: &http.Client{
-			Jar:       session.Jar(),
-			Transport: tr,
-			Timeout:   20 * time.Second,
-		},
-		debugBody: cfg.DebugHTTPBody,
-		platform:  cfg.Platform,
-	}
+	c.httpClient = c.newHTTPClientLocked()
+	return c
 }
 
 func (c *Client) Configure(cfg config.CorplinkConfig) {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: cfg.InsecureSkipVerify}, //nolint:gosec // configurable for self-signed deployments
-	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.httpClient = &http.Client{
+	c.insecureTLS = cfg.InsecureSkipVerify
+	c.debugBody = cfg.DebugHTTPBody
+	c.platform = cfg.Platform
+	c.httpClient = c.newHTTPClientLocked()
+}
+
+func (c *Client) SetDialContext(dial func(ctx context.Context, network, address string) (net.Conn, error)) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.dialContext = dial
+	c.httpClient = c.newHTTPClientLocked()
+}
+
+func (c *Client) newHTTPClientLocked() *http.Client {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: c.insecureTLS}, //nolint:gosec // configurable for self-signed deployments
+	}
+	if c.dialContext != nil {
+		tr.DialContext = c.dialContext
+	}
+	return &http.Client{
 		Jar:       c.session.Jar(),
 		Transport: tr,
 		Timeout:   20 * time.Second,
 	}
-	c.debugBody = cfg.DebugHTTPBody
-	c.platform = cfg.Platform
 }
 
 func (c *Client) post(ctx context.Context, rawURL string, body, out any) error {

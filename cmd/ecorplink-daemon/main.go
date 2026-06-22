@@ -333,6 +333,7 @@ func runWithContext(ctx context.Context) error {
 
 	sessionPath := filepath.Join(ecorplinkDir(), "corplink_session.json")
 	corplinkMgr := corplink.NewManagerWithConfig(sessionPath, cfg.Corplink)
+	configureCorplinkClientNetwork(corplinkMgr.Client(), cfg)
 	vpnMgr := vpnpkg.New(cfg)
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -498,6 +499,10 @@ func dispatchHandler(ctx context.Context, cmd daemonipc.Cmd, cl *corplink.Client
 		return daemonipc.Response{OK: true, Data: cm.IsAuthenticated()}
 
 	case daemonipc.ActionCleanupRoutes:
+		activeConnection.Stop()
+		if err := vm.Disconnect(); err != nil {
+			log.Printf("[ipc] cleanup_routes disconnect: %v (continuing)", err)
+		}
 		cleanupPersistedRoutes() // includes cleanupSystemDNS + flushDNSCache
 		log.Printf("[ipc] cleanup_routes: done")
 		return daemonipc.Response{OK: true}
@@ -565,6 +570,7 @@ func dispatchHandler(ctx context.Context, cmd daemonipc.Cmd, cl *corplink.Client
 		*cfg = *updated
 		setupLogging(cfg)
 		cm.Configure(updated.Corplink)
+		configureCorplinkClientNetwork(cm.Client(), updated)
 		if err := vm.UpdateSOCKS5(updated.SOCKS5); err != nil {
 			return daemonipc.Response{OK: false, Error: "reload socks5: " + err.Error()}
 		}
@@ -623,6 +629,15 @@ type connectDetails struct {
 }
 
 func connectVPNOnce(ctx context.Context, cl *corplink.Client, cm *corplink.Manager, vm *vpnpkg.Manager, cfg *config.Config, nodeID int, followSplitRoutes bool) (daemonipc.Response, connectDetails) {
+	configureCorplinkClientNetwork(cl, cfg)
+	physIface := cfg.DirectOutbound.Interface
+	if physIface == "" {
+		d := outbound.NewDirect("", nil)
+		d.Init() //nolint:errcheck
+		physIface = d.ResolvedIfaceName()
+	}
+	ensureCorplinkAPIRoute(ctx, cm.Session().Server, physIface, firstNonSystem(cfg.DNS.Upstream))
+
 	nodes, err := cl.ListNodes(ctx)
 	if err != nil {
 		return daemonipc.Response{OK: false, Error: "list nodes: " + err.Error()}, connectDetails{}
@@ -650,14 +665,6 @@ func connectVPNOnce(ctx context.Context, cl *corplink.Client, cm *corplink.Manag
 		return daemonipc.Response{OK: false, Error: "wg config: " + err.Error()}, connectDetails{}
 	}
 
-	// Determine physical interface
-	physIface := cfg.DirectOutbound.Interface
-	if physIface == "" {
-		d := outbound.NewDirect("", nil)
-		d.Init() //nolint:errcheck
-		physIface = d.ResolvedIfaceName()
-	}
-
 	serverHost, _, _ := net.SplitHostPort(wgInfo.ServerEndpoint)
 
 	// Parse fallback DNS from upstream config for use when VPN provides no DNS.
@@ -672,13 +679,7 @@ func connectVPNOnce(ctx context.Context, cl *corplink.Client, cm *corplink.Manag
 
 	// Add a direct host route for the Corplink API server so daemon HTTP
 	// requests (keep-alive, node listing, etc.) never go through the TUN.
-	if apiServer := cm.Session().Server; apiServer != "" && physIface != "" {
-		if apiHost, err := resolveHostname(apiServer); err == nil {
-			if rerr := forwarder.AddScopedHostRoute(apiHost, physIface); rerr != nil {
-				log.Printf("[vpn] corplink api route %s: %v (continuing)", apiHost, rerr)
-			}
-		}
-	}
+	ensureCorplinkAPIRoute(ctx, cm.Session().Server, physIface, firstNonSystem(cfg.DNS.Upstream))
 
 	cc := vpnpkg.ConnectConfig{
 		WG: wgdevice.Config{
@@ -730,6 +731,20 @@ func connectVPNOnce(ctx context.Context, cl *corplink.Client, cm *corplink.Manag
 		Protocol:    proto,
 		ConnectedAt: time.Now().Unix(),
 	}}, connectDetails{node: node, wgInfo: wgInfo, pubB64: pubB64}
+}
+
+func configureCorplinkClientNetwork(cl *corplink.Client, cfg *config.Config) {
+	if cl == nil || cfg == nil {
+		return
+	}
+	direct := outbound.NewDirect(cfg.DirectOutbound.Interface, cfg.DNS.Upstream)
+	if err := direct.Init(); err != nil {
+		log.Printf("[corplink] direct API dialer init: %v (using default network)", err)
+		cl.SetDialContext(nil)
+		return
+	}
+	cl.SetDialContext(direct.DialerWithDNS().DialContext)
+	log.Printf("[corplink] API dialer bound to %s", direct.ResolvedIfaceName())
 }
 
 func startConnectionLoops(ctx context.Context, gen uint64, cl *corplink.Client, cm *corplink.Manager, vm *vpnpkg.Manager, cfg *config.Config, nodeID int, followSplitRoutes bool, node corplink.VPNNode, vpnIP, pubB64 string) {
@@ -820,8 +835,48 @@ func startConnectionLoops(ctx context.Context, gen uint64, cl *corplink.Client, 
 	}()
 }
 
+type hostResolver interface {
+	LookupHost(ctx context.Context, host string) ([]string, error)
+}
+
+// ensureCorplinkAPIRoute keeps control-plane HTTP traffic off the TUN. It uses
+// a physical-interface resolver when possible so a hijacked system resolver
+// cannot return a fake IP for the API server.
+func ensureCorplinkAPIRoute(ctx context.Context, apiServer, physIface, upstreamDNS string) {
+	if apiServer == "" || physIface == "" {
+		return
+	}
+	resolver := hostResolver(net.DefaultResolver)
+	if upstreamDNS != "" {
+		direct := outbound.NewDirect(physIface, nil)
+		if err := direct.Init(); err != nil {
+			log.Printf("[vpn] corplink api direct resolver iface %s: %v (using default resolver)", physIface, err)
+		} else {
+			dialer := direct.Dialer()
+			resolver = &net.Resolver{
+				PreferGo: true,
+				Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+					return dialer.DialContext(ctx, "udp", upstreamDNS)
+				},
+			}
+		}
+	}
+	apiHost, err := resolveHostnameWithResolver(ctx, apiServer, resolver)
+	if err != nil {
+		log.Printf("[vpn] corplink api route resolve: %v (continuing)", err)
+		return
+	}
+	if rerr := forwarder.AddScopedHostRoute(apiHost, physIface); rerr != nil {
+		log.Printf("[vpn] corplink api route %s: %v (continuing)", apiHost, rerr)
+	}
+}
+
 // resolveHostname extracts the hostname from a URL and resolves it to an IP.
 func resolveHostname(rawURL string) (string, error) {
+	return resolveHostnameWithResolver(context.Background(), rawURL, net.DefaultResolver)
+}
+
+func resolveHostnameWithResolver(ctx context.Context, rawURL string, resolver hostResolver) (string, error) {
 	u, err := url.Parse(rawURL)
 	if err != nil {
 		return "", err
@@ -833,7 +888,7 @@ func resolveHostname(rawURL string) (string, error) {
 	if net.ParseIP(host) != nil {
 		return host, nil
 	}
-	addrs, err := net.LookupHost(host)
+	addrs, err := resolver.LookupHost(ctx, host)
 	if err != nil || len(addrs) == 0 {
 		return "", fmt.Errorf("resolve %q: %w", host, err)
 	}
