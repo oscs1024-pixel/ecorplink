@@ -23,6 +23,10 @@ func addScopedHostRoute(ip, iface string) error {
 	if gateway == nil && !isTunnelInterface(iface) {
 		return fmt.Errorf("no gateway for physical iface %s", iface)
 	}
+	if routeNeedsReplace(ip, iface, gateway) {
+		deleteHostRoute(ip) //nolint:errcheck
+		forgetHostRoute(ip)
+	}
 	return addHostRoute(ip, iface, gateway)
 }
 
@@ -52,6 +56,26 @@ func addHostRoute(ip, iface string, gateway net.IP) error {
 func deleteHostRoute(ip string) error {
 	exec.Command("route", "delete", "-host", ip).Run() //nolint:errcheck
 	return nil
+}
+
+func routeNeedsReplace(ip, iface string, gateway net.IP) bool {
+	out, err := exec.Command("route", "-n", "get", ip).CombinedOutput()
+	if err != nil {
+		return false
+	}
+	return routeOutputNeedsReplace(out, iface, gateway)
+}
+
+func routeOutputNeedsReplace(out []byte, iface string, gateway net.IP) bool {
+	gotIface := parseRouteInterface(out)
+	if gotIface != "" && gotIface != iface {
+		return true
+	}
+	gotGateway := parseRouteGateway(out)
+	if gateway == nil || gateway.To4() == nil || gateway.IsUnspecified() {
+		return false
+	}
+	return gotGateway == nil || !gotGateway.Equal(gateway)
 }
 
 func scopedGateway(ip, iface string) (net.IP, error) {
