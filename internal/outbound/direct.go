@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"sync"
 )
 
 // Direct dials TCP/UDP connections bound to a specific network interface,
 // bypassing VPN default routes.
 type Direct struct {
-	IfaceName string         // "" = auto-detect on Init()
+	IfaceName string // "" = auto-detect on Init()
+	mu        sync.RWMutex
 	iface     *net.Interface // resolved interface
 	upstream  []string       // DNS upstream servers ("ip:port" or "SYSTEM")
 }
@@ -57,6 +59,9 @@ func isPhysical(iface net.Interface) bool {
 
 // ResolvedIfaceName returns the actual interface name used (after auto-detect).
 func (d *Direct) ResolvedIfaceName() string {
+	d.refreshAutoIface()
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 	if d.iface != nil {
 		return d.iface.Name
 	}
@@ -74,37 +79,72 @@ func (d *Direct) Init() error {
 		if err != nil {
 			return fmt.Errorf("outbound: interface %q not found: %w", d.IfaceName, err)
 		}
+		d.mu.Lock()
 		d.iface = iface
+		d.mu.Unlock()
 		return nil
 	}
 
-	// Auto-detect the first physical interface
+	iface, err := detectPhysicalInterface()
+	if err != nil {
+		return err
+	}
+	d.mu.Lock()
+	d.iface = iface
+	d.mu.Unlock()
+	return nil
+}
+
+func detectPhysicalInterface() (*net.Interface, error) {
+	if iface, err := defaultRouteInterface(); err == nil && iface != nil && isPhysical(*iface) {
+		return iface, nil
+	}
 	ifaces, err := net.Interfaces()
 	if err != nil {
-		return fmt.Errorf("outbound: failed to list interfaces: %w", err)
-	}
-	if iface, err := defaultRouteInterface(); err == nil && iface != nil && isPhysical(*iface) {
-		d.iface = iface
-		return nil
+		return nil, fmt.Errorf("outbound: failed to list interfaces: %w", err)
 	}
 	for _, iface := range ifaces {
 		iface := iface
 		if isPhysical(iface) {
-			d.iface = &iface
-			return nil
+			return &iface, nil
 		}
 	}
-	return fmt.Errorf("outbound: no suitable physical interface found")
+	return nil, fmt.Errorf("outbound: no suitable physical interface found")
+}
+
+func (d *Direct) refreshAutoIface() {
+	if d.IfaceName != "" {
+		return
+	}
+	iface, err := detectPhysicalInterface()
+	if err != nil || iface == nil {
+		return
+	}
+	d.mu.Lock()
+	d.iface = iface
+	d.mu.Unlock()
+}
+
+func (d *Direct) currentIface() *net.Interface {
+	d.refreshAutoIface()
+	d.mu.RLock()
+	defer d.mu.RUnlock()
+	if d.iface == nil {
+		return nil
+	}
+	iface := *d.iface
+	return &iface
 }
 
 // Dialer returns a *net.Dialer whose connections are bound to d's interface.
 // If Init() was not called or iface is nil, returns a plain &net.Dialer{}.
 func (d *Direct) Dialer() *net.Dialer {
-	if d.iface == nil {
+	iface := d.currentIface()
+	if iface == nil {
 		return &net.Dialer{}
 	}
 	return &net.Dialer{
-		Control: bindToInterface(d.iface.Index, d.iface.Name),
+		Control: bindToInterface(iface.Index, iface.Name),
 	}
 }
 
@@ -113,11 +153,12 @@ func (d *Direct) Dialer() *net.Dialer {
 // This prevents domain-name dials (e.g. REDIRECT targets) from going through
 // the TUN fakeip DNS, which would return a fake IP unreachable via physical NIC.
 func (d *Direct) DialerWithDNS() *net.Dialer {
-	if d.iface == nil {
+	iface := d.currentIface()
+	if iface == nil {
 		return &net.Dialer{}
 	}
 	dialer := &net.Dialer{
-		Control: bindToInterface(d.iface.Index, d.iface.Name),
+		Control: bindToInterface(iface.Index, iface.Name),
 	}
 	// d.Resolver uses d.Dialer() (no custom resolver), so no recursion.
 	for _, u := range d.upstream {

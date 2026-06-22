@@ -10,9 +10,16 @@ import (
 	"time"
 
 	"ecorplink/internal/config"
+	"ecorplink/internal/corplink"
 	"ecorplink/internal/routetable"
 	vpnpkg "ecorplink/internal/vpn"
 )
+
+type cleanupTestResolver map[string][]string
+
+func (r cleanupTestResolver) LookupHost(ctx context.Context, host string) ([]string, error) {
+	return r[host], nil
+}
 
 func TestWaitForProcessExitReturnsAfterProcessStops(t *testing.T) {
 	checks := 0
@@ -113,6 +120,28 @@ func TestCleanupAfterReconnectDisconnectRunsFullNetworkCleanup(t *testing.T) {
 
 	if !called {
 		t.Fatal("reconnect teardown should run full route and DNS cleanup")
+	}
+}
+
+func TestKnownCleanupHostIPsIncludesDNSAndAPIServer(t *testing.T) {
+	cfg := config.DefaultConfig()
+	cfg.DNS.Upstream = []string{"223.6.6.6:53", "SYSTEM", "bad-value"}
+	dir := t.TempDir()
+	sessionPath := filepath.Join(dir, "session.json")
+	mgr := corplink.NewManagerWithConfig(sessionPath, cfg.Corplink)
+	mgr.Session().Server = "https://vpn.example.invalid:443"
+
+	got := knownCleanupHostIPs(context.Background(), cfg, mgr, cleanupTestResolver{
+		"vpn.example.invalid": []string{"203.0.113.10", "not-an-ip", "203.0.113.10"},
+	})
+	want := []string{"223.6.6.6", "203.0.113.10"}
+	if len(got) != len(want) {
+		t.Fatalf("cleanup ips = %v, want %v", got, want)
+	}
+	for i := range want {
+		if got[i].String() != want[i] {
+			t.Fatalf("cleanup ips = %v, want %v", got, want)
+		}
 	}
 }
 

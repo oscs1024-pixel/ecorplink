@@ -2,6 +2,7 @@ package corplink
 
 import (
 	"context"
+	"errors"
 	"net"
 	"net/http"
 	"strings"
@@ -78,5 +79,23 @@ func TestClientSetDialContextPreservedAcrossConfigure(t *testing.T) {
 	}
 	if tr.TLSClientConfig == nil || !tr.TLSClientConfig.InsecureSkipVerify {
 		t.Fatal("Configure should still apply TLS settings")
+	}
+}
+
+func TestRedactURLAndNetworkErrorForLog(t *testing.T) {
+	rawURL := "https://vpn.example.invalid:443/api/vpn/list?os=Android&os_version=2"
+	gotURL := redactURLForLog(rawURL)
+	if strings.Contains(gotURL, "vpn.example.invalid") {
+		t.Fatalf("redacted URL still contains host: %s", gotURL)
+	}
+	if !strings.Contains(gotURL, "/api/vpn/list") {
+		t.Fatalf("redacted URL lost path: %s", gotURL)
+	}
+
+	errText := redactErrorForLog(rawURL, errors.New(`Get "`+rawURL+`": dial tcp 203.0.113.10:443: connect: can't assign requested address`))
+	for _, secret := range []string{"vpn.example.invalid", "203.0.113.10"} {
+		if strings.Contains(errText, secret) {
+			t.Fatalf("redacted error still contains %q: %s", secret, errText)
+		}
 	}
 }

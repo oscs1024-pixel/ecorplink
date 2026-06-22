@@ -4,18 +4,29 @@ import { useAppStore } from '../stores/app'
 
 const store = useAppStore()
 const logView = ref<HTMLElement | null>(null)
+const followTail = ref(true)
 let timer: number | undefined
 
-async function refreshLog() {
+function isNearBottom(el: HTMLElement) {
+  return el.scrollHeight - el.scrollTop - el.clientHeight < 24
+}
+
+async function refreshLog(forceTail = false) {
+  const shouldFollow = forceTail || (logView.value ? isNearBottom(logView.value) : followTail.value)
   await store.readLog(300)
   await nextTick()
-  if (logView.value) {
+  if (logView.value && shouldFollow) {
     logView.value.scrollTop = logView.value.scrollHeight
   }
 }
 
+function onLogScroll() {
+  if (!logView.value) return
+  followTail.value = isNearBottom(logView.value)
+}
+
 onMounted(async () => {
-  await refreshLog()
+  await refreshLog(true)
   timer = window.setInterval(refreshLog, 1000)
 })
 
@@ -28,9 +39,9 @@ onUnmounted(() => {
   <section class="page-stack">
     <div class="toolbar">
       <h2>日志</h2>
-      <n-button @click="refreshLog">刷新</n-button>
+      <n-button @click="refreshLog(true)">刷新</n-button>
     </div>
-    <pre ref="logView" class="log-view">{{ store.logChunk?.text || '暂无日志' }}</pre>
+    <pre ref="logView" class="log-view" @scroll="onLogScroll">{{ store.logChunk?.text || '暂无日志' }}</pre>
   </section>
 </template>
 

@@ -16,6 +16,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"regexp"
 	"slices"
 	"strings"
 	"sync"
@@ -29,6 +30,8 @@ const (
 	osQuery   = "os=Android&os_version=2"
 	userAgent = "CorpLink/201000 (GooglePixel; Android 10; en)"
 )
+
+var ipv4LogPattern = regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`)
 
 type apiResp[T any] struct {
 	Code    int    `json:"code"`
@@ -119,7 +122,8 @@ func (c *Client) do(ctx context.Context, method, rawURL string, body, out any) e
 	httpClient := c.httpClient
 	debugBody := c.debugBody
 	c.mu.RUnlock()
-	log.Printf("[corplink] → %s %s", method, rawURL)
+	logURL := redactURLForLog(rawURL)
+	log.Printf("[corplink] → %s %s", method, logURL)
 	if debugBody && len(bodyBytes) > 0 {
 		log.Printf("[corplink] → body=%s", redactHTTPLogBody(bodyBytes, 512))
 	}
@@ -154,7 +158,7 @@ func (c *Client) do(ctx context.Context, method, rawURL string, body, out any) e
 				}
 				req.Header.Set("Cookie", strings.Join(parts, "; "))
 				if reqURL != nil && reqURL.Host != serverURL.Host {
-					log.Printf("[corplink] injected %d cookies for cross-host %s", len(parts), reqURL.Host)
+					log.Printf("[corplink] injected %d cookies for cross-host %s", len(parts), redactHostForLog(reqURL.Host))
 				}
 			}
 		}
@@ -162,8 +166,9 @@ func (c *Client) do(ctx context.Context, method, rawURL string, body, out any) e
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		log.Printf("[corplink] ← ERROR %s: %v", rawURL, err)
-		return err
+		safeErr := redactErrorForLog(rawURL, err)
+		log.Printf("[corplink] ← ERROR %s: %s", logURL, safeErr)
+		return fmt.Errorf("%s", safeErr)
 	}
 	defer resp.Body.Close()
 	c.parseDateOffset(resp)
@@ -172,7 +177,7 @@ func (c *Client) do(ctx context.Context, method, rawURL string, body, out any) e
 	if err != nil {
 		return fmt.Errorf("read response: %w", err)
 	}
-	log.Printf("[corplink] ← %d %s", resp.StatusCode, rawURL)
+	log.Printf("[corplink] ← %d %s", resp.StatusCode, logURL)
 	if debugBody && len(respBody) > 0 {
 		log.Printf("[corplink] ← body=%s", redactHTTPLogBody(respBody, 1024))
 	}
@@ -202,6 +207,37 @@ func truncate(b []byte, max int) string {
 		return s[:max] + "…"
 	}
 	return s
+}
+
+func redactURLForLog(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return "<redacted-url>"
+	}
+	u.User = nil
+	if u.Host != "" {
+		u.Host = "<redacted-host>"
+	}
+	return u.String()
+}
+
+func redactHostForLog(host string) string {
+	if host == "" {
+		return ""
+	}
+	return "<redacted-host>"
+}
+
+func redactErrorForLog(rawURL string, err error) string {
+	if err == nil {
+		return ""
+	}
+	msg := err.Error()
+	if rawURL != "" {
+		msg = strings.ReplaceAll(msg, rawURL, redactURLForLog(rawURL))
+	}
+	msg = ipv4LogPattern.ReplaceAllString(msg, "<redacted-ip>")
+	return msg
 }
 
 func (c *Client) httpBodyLoggingEnabled() bool {
@@ -296,7 +332,7 @@ func (c *Client) CopySessionCookiesToURL(nodeBaseURL string) {
 		}
 	}
 	c.session.jar.SetCookies(nodeURL, stripped)
-	log.Printf("[corplink] copied %d cookies from %s → %s", len(stripped), serverURL.Host, nodeURL.Host)
+	log.Printf("[corplink] copied %d cookies from %s to %s", len(stripped), redactHostForLog(serverURL.Host), redactHostForLog(nodeURL.Host))
 }
 
 func (c *Client) apiURL(path string) string {

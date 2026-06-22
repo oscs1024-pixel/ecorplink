@@ -57,6 +57,25 @@ func CleanupPersistedHostRoutes() {
 	savePersistedHostRoutesLocked(map[string]struct{}{})
 }
 
+// CleanupHostRoutesByIP removes host route exceptions for the supplied IPv4
+// addresses even when they were created by an older version that did not
+// persist them in host-routes.json.
+func CleanupHostRoutesByIP(ips []net.IP) {
+	seen := make(map[string]struct{}, len(ips))
+	for _, ip := range ips {
+		if ip == nil || ip.To4() == nil {
+			continue
+		}
+		key := ip.String()
+		if _, ok := seen[key]; ok {
+			continue
+		}
+		seen[key] = struct{}{}
+		deleteHostRoute(key) //nolint:errcheck
+		forgetHostRoute(key)
+	}
+}
+
 func loadPersistedHostRoutesLocked() map[string]struct{} {
 	routes := make(map[string]struct{})
 	data, err := os.ReadFile(hostRouteStatePath())

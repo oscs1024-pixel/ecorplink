@@ -36,6 +36,17 @@ tasks:
       - mkdir -p cmd/gui/daemon
       - go build -trimpath -ldflags "-s -w -X main.Version={{.VERSION}}" -o cmd/gui/daemon/ecorplink-daemon ./cmd/ecorplink-daemon
       - |
+        if [ "{{.GOOS | default OS}}" = "darwin" ] && [ -n "${MACOS_CODESIGN_IDENTITY:-}" ] && command -v codesign >/dev/null 2>&1; then
+          if security find-identity -v -p codesigning 2>/dev/null | grep -F "$MACOS_CODESIGN_IDENTITY" >/dev/null 2>&1; then
+            codesign --force --timestamp --options runtime --sign "$MACOS_CODESIGN_IDENTITY" cmd/gui/daemon/ecorplink-daemon
+          else
+            printf 'warning: codesign identity not available for daemon, falling back to ad-hoc: %s\n' "$MACOS_CODESIGN_IDENTITY" >&2
+            codesign --force --sign - cmd/gui/daemon/ecorplink-daemon || true
+          fi
+        elif [ "{{.GOOS | default OS}}" = "darwin" ] && command -v codesign >/dev/null 2>&1; then
+          codesign --force --sign - cmd/gui/daemon/ecorplink-daemon || true
+        fi
+      - |
         if command -v sha256sum >/dev/null 2>&1; then
           DAEMON_SHA="$(sha256sum cmd/gui/daemon/ecorplink-daemon | awk '{print $1}')"
         elif command -v shasum >/dev/null 2>&1; then

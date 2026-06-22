@@ -131,6 +131,10 @@ Environment:
   WAILS=/path/to/wails3
   LOGO_PATH=packaging/logo.png
   VOL_NAME=ECorpLink
+  MACOS_CODESIGN_IDENTITY="Developer ID Application: Name (TEAMID)"
+  APPLE_ID=<notary Apple ID>
+  APPLE_APP_PASSWORD=<notary app-specific password>
+  APPLE_TEAM_ID=<Apple Developer team ID>
 
 Output:
   macOS:   dist/\$APP_NAME-v<version>-darwin-amd64.dmg
@@ -163,6 +167,82 @@ zip_dir() {
 
   printf 'error: zip, 7z, or powershell.exe is required to create %s\n' "$output_file" >&2
   exit 1
+}
+
+macos_codesign_identity_available() {
+  [ "$TARGET" = "darwin" ] || return 1
+  [ -n "${MACOS_CODESIGN_IDENTITY:-}" ] || return 1
+  command -v codesign >/dev/null 2>&1 || return 1
+  security find-identity -v -p codesigning 2>/dev/null | grep -F "$MACOS_CODESIGN_IDENTITY" >/dev/null 2>&1
+}
+
+macos_developer_id_identity_available() {
+  macos_codesign_identity_available || return 1
+  case "$MACOS_CODESIGN_IDENTITY" in
+    Developer\ ID\ Application:*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+sign_macos_path() {
+  path="$1"
+  if macos_codesign_identity_available; then
+    log "macOS code signing: $path"
+    codesign --force --timestamp --options runtime --sign "$MACOS_CODESIGN_IDENTITY" "$path"
+    return
+  fi
+  if command -v codesign >/dev/null 2>&1; then
+    if [ -n "${MACOS_CODESIGN_IDENTITY:-}" ]; then
+      printf 'warning: codesign identity not available, falling back to ad-hoc: %s\n' "$MACOS_CODESIGN_IDENTITY" >&2
+    fi
+    log "Ad-hoc signing: $path"
+    if ! codesign --force --sign - "$path"; then
+      printf 'warning: ad-hoc signing failed; continuing without signature\n' >&2
+    fi
+  fi
+}
+
+sign_macos_app_bundle() {
+  app_dir="$1"
+  if macos_codesign_identity_available; then
+    log "macOS code signing app bundle"
+    codesign --force --timestamp --options runtime --sign "$MACOS_CODESIGN_IDENTITY" "$app_dir/Contents/MacOS/$APP_BIN"
+    codesign --force --deep --timestamp --options runtime --sign "$MACOS_CODESIGN_IDENTITY" "$app_dir"
+    return
+  fi
+  if command -v codesign >/dev/null 2>&1; then
+    if [ -n "${MACOS_CODESIGN_IDENTITY:-}" ]; then
+      printf 'warning: codesign identity not available, falling back to ad-hoc: %s\n' "$MACOS_CODESIGN_IDENTITY" >&2
+    fi
+    log "Ad-hoc signing app bundle"
+    if ! codesign --force --deep --sign - "$app_dir"; then
+      printf 'warning: ad-hoc signing failed; continuing without signature\n' >&2
+    fi
+  fi
+}
+
+notarize_macos_dmg() {
+  dmg_path="$1"
+  if [ -z "${APPLE_ID:-}" ] || [ -z "${APPLE_APP_PASSWORD:-}" ] || [ -z "${APPLE_TEAM_ID:-}" ]; then
+    log "Skipping notarization; Apple notary credentials are not configured"
+    return
+  fi
+  if ! macos_developer_id_identity_available; then
+    log "Skipping notarization; Developer ID Application identity is not available"
+    return
+  fi
+  if ! command -v xcrun >/dev/null 2>&1; then
+    printf 'warning: xcrun not found; skipping notarization\n' >&2
+    return
+  fi
+  log "Submitting DMG for notarization"
+  xcrun notarytool submit "$dmg_path" \
+    --apple-id "$APPLE_ID" \
+    --password "$APPLE_APP_PASSWORD" \
+    --team-id "$APPLE_TEAM_ID" \
+    --wait
+  log "Stapling notarization ticket"
+  xcrun stapler staple "$dmg_path"
 }
 
 while [ "$#" -gt 0 ]; do
@@ -266,6 +346,9 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
   DAEMON_BIN_NAME="ecorplink-daemon"
   [ "$TARGET" = "windows" ] && DAEMON_BIN_NAME="ecorplink-daemon.exe"
   (cd "$ROOT_DIR" && CGO_ENABLED=0 GOOS="$TARGET" GOARCH="$ARCH" go build -trimpath -ldflags "-s -w -X main.Version=$VERSION" -o "cmd/gui/daemon/$DAEMON_BIN_NAME" ./cmd/ecorplink-daemon)
+  if [ "$TARGET" = "darwin" ]; then
+    sign_macos_path "$ROOT_DIR/cmd/gui/daemon/$DAEMON_BIN_NAME"
+  fi
 
   log "Generating daemon SHA256 constant"
   DAEMON_SHA=""
@@ -376,17 +459,14 @@ case "$TARGET" in
 EOF
     printf 'APPL????' > "$APP_DIR/Contents/PkgInfo"
 
-    if command -v codesign >/dev/null 2>&1; then
-      log "Ad-hoc signing app bundle"
-      if ! codesign --force --deep --sign - "$APP_DIR"; then
-        printf 'warning: ad-hoc signing failed; continuing without signature\n' >&2
-      fi
-    fi
+    sign_macos_app_bundle "$APP_DIR"
 
     ARTIFACT_PATH="$DIST_DIR/$ARTIFACT_BASENAME.dmg"
     log "Creating DMG"
     ln -s /Applications "$STAGING_DIR/Applications"
     hdiutil create -volname "$VOL_NAME" -srcfolder "$STAGING_DIR" -ov -format UDZO "$ARTIFACT_PATH"
+    sign_macos_path "$ARTIFACT_PATH"
+    notarize_macos_dmg "$ARTIFACT_PATH"
     ;;
 
   linux)

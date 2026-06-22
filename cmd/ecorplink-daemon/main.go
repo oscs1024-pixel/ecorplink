@@ -35,6 +35,7 @@ import (
 var configPath = flag.String("c", "", "config file path")
 var pidFilePathFlag = flag.String("pid-file", "", "pid file path")
 var cleanupRoutesAndDNS = cleanupPersistedRoutes
+var cleanupHostRoutesByIP = forwarder.CleanupHostRoutesByIP
 var activeConnection connectionSupervisor
 var repairOwnership = daemonipc.ChownToDirOwner
 
@@ -289,6 +290,79 @@ func cleanupPersistedRoutes() {
 	flushDNSCache() // clear fake-IP entries left from previous tunnel session
 }
 
+func cleanupKnownHostRoutes(ctx context.Context, cfg *config.Config, cm *corplink.Manager) {
+	ips := knownCleanupHostIPs(ctx, cfg, cm, net.DefaultResolver)
+	if len(ips) == 0 {
+		return
+	}
+	cleanupHostRoutesByIP(ips)
+}
+
+func knownCleanupHostIPs(ctx context.Context, cfg *config.Config, cm *corplink.Manager, resolver hostResolver) []net.IP {
+	var ips []net.IP
+	if cfg != nil {
+		for _, upstream := range cfg.DNS.Upstream {
+			host, _, err := net.SplitHostPort(upstream)
+			if err != nil {
+				continue
+			}
+			if ip := net.ParseIP(host); ip != nil && ip.To4() != nil {
+				ips = append(ips, ip)
+			}
+		}
+	}
+	if cm != nil && cm.Session() != nil {
+		ips = append(ips, resolveCleanupHostIPs(ctx, cm.Session().Server, resolver)...)
+	}
+	return uniqueIPv4s(ips)
+}
+
+func resolveCleanupHostIPs(ctx context.Context, rawURL string, resolver hostResolver) []net.IP {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return nil
+	}
+	host := u.Hostname()
+	if host == "" {
+		return nil
+	}
+	if ip := net.ParseIP(host); ip != nil && ip.To4() != nil {
+		return []net.IP{ip}
+	}
+	if resolver == nil {
+		resolver = net.DefaultResolver
+	}
+	addrs, err := resolver.LookupHost(ctx, host)
+	if err != nil {
+		log.Printf("[cleanup] resolve host routes for %s: %v", host, err)
+		return nil
+	}
+	ips := make([]net.IP, 0, len(addrs))
+	for _, addr := range addrs {
+		if ip := net.ParseIP(addr); ip != nil && ip.To4() != nil {
+			ips = append(ips, ip)
+		}
+	}
+	return ips
+}
+
+func uniqueIPv4s(ips []net.IP) []net.IP {
+	seen := make(map[string]struct{}, len(ips))
+	out := make([]net.IP, 0, len(ips))
+	for _, ip := range ips {
+		if ip == nil || ip.To4() == nil {
+			continue
+		}
+		key := ip.String()
+		if _, ok := seen[key]; ok {
+			continue
+		}
+		seen[key] = struct{}{}
+		out = append(out, ip)
+	}
+	return out
+}
+
 func cleanupAfterReconnectDisconnect() {
 	cleanupRoutesAndDNS()
 }
@@ -333,6 +407,7 @@ func runWithContext(ctx context.Context) error {
 
 	sessionPath := filepath.Join(ecorplinkDir(), "corplink_session.json")
 	corplinkMgr := corplink.NewManagerWithConfig(sessionPath, cfg.Corplink)
+	cleanupKnownHostRoutes(context.Background(), cfg, corplinkMgr)
 	configureCorplinkClientNetwork(corplinkMgr.Client(), cfg)
 	vpnMgr := vpnpkg.New(cfg)
 
@@ -422,6 +497,9 @@ func buildHandler(cfg *config.Config, cm *corplink.Manager, vm *vpnpkg.Manager, 
 }
 
 func dispatchHandler(ctx context.Context, cmd daemonipc.Cmd, cl *corplink.Client, cm *corplink.Manager, vm *vpnpkg.Manager, cfg *config.Config, shutdown func(), loginCache *loginCapabilityCache) daemonipc.Response {
+	if actionUsesCorplinkNetwork(cmd.Action) {
+		prepareCorplinkControlPlane(ctx, cl, cm, cfg)
+	}
 	switch cmd.Action {
 	case daemonipc.ActionShutdown:
 		activeConnection.Stop()
@@ -504,6 +582,7 @@ func dispatchHandler(ctx context.Context, cmd daemonipc.Cmd, cl *corplink.Client
 			log.Printf("[ipc] cleanup_routes disconnect: %v (continuing)", err)
 		}
 		cleanupPersistedRoutes() // includes cleanupSystemDNS + flushDNSCache
+		cleanupKnownHostRoutes(ctx, cfg, cm)
 		log.Printf("[ipc] cleanup_routes: done")
 		return daemonipc.Response{OK: true}
 
@@ -526,12 +605,14 @@ func dispatchHandler(ctx context.Context, cmd daemonipc.Cmd, cl *corplink.Client
 		if err != nil {
 			return daemonipc.Response{OK: false, Error: err.Error()}
 		}
+		physIface := prepareCorplinkControlPlane(ctx, cl, cm, cfg)
 		dtos := make([]daemonipc.VPNNodeDTO, len(nodes))
 		var wg sync.WaitGroup
 		for i, n := range nodes {
 			wg.Add(1)
 			go func(idx int, node corplink.VPNNode) {
 				defer wg.Done()
+				ensureNodeAPIRoute(node, physIface)
 				lat, _ := cl.PingNode(ctx, node)
 				dtos[idx] = daemonipc.VPNNodeDTO{
 					ID: node.ID, Name: node.Name,
@@ -549,6 +630,8 @@ func dispatchHandler(ctx context.Context, cmd daemonipc.Cmd, cl *corplink.Client
 		}
 		for _, n := range nodes {
 			if n.ID == cmd.NodeID {
+				physIface := prepareCorplinkControlPlane(ctx, cl, cm, cfg)
+				ensureNodeAPIRoute(n, physIface)
 				lat, _ := cl.PingNode(ctx, n)
 				return daemonipc.Response{OK: true, Data: daemonipc.VPNNodeDTO{
 					ID: n.ID, Name: n.Name,
@@ -612,6 +695,26 @@ func dispatchHandler(ctx context.Context, cmd daemonipc.Cmd, cl *corplink.Client
 	}
 }
 
+func actionUsesCorplinkNetwork(action string) bool {
+	switch action {
+	case daemonipc.ActionDiscover,
+		daemonipc.ActionLoginMethods,
+		daemonipc.ActionSendCode,
+		daemonipc.ActionVerifyCode,
+		daemonipc.ActionLoginPassword,
+		daemonipc.ActionGetQRCode,
+		daemonipc.ActionPollQR,
+		daemonipc.ActionLogout,
+		daemonipc.ActionListNodes,
+		daemonipc.ActionPingNodes,
+		daemonipc.ActionPingSingle,
+		daemonipc.ActionConnect:
+		return true
+	default:
+		return false
+	}
+}
+
 func handleConnect(ctx context.Context, cl *corplink.Client, cm *corplink.Manager, vm *vpnpkg.Manager, cfg *config.Config, nodeID int, followSplitRoutes bool) daemonipc.Response {
 	resp, details := connectVPNOnce(ctx, cl, cm, vm, cfg, nodeID, followSplitRoutes)
 	if !resp.OK {
@@ -629,14 +732,10 @@ type connectDetails struct {
 }
 
 func connectVPNOnce(ctx context.Context, cl *corplink.Client, cm *corplink.Manager, vm *vpnpkg.Manager, cfg *config.Config, nodeID int, followSplitRoutes bool) (daemonipc.Response, connectDetails) {
-	configureCorplinkClientNetwork(cl, cfg)
-	physIface := cfg.DirectOutbound.Interface
+	physIface := prepareCorplinkControlPlane(ctx, cl, cm, cfg)
 	if physIface == "" {
-		d := outbound.NewDirect("", nil)
-		d.Init() //nolint:errcheck
-		physIface = d.ResolvedIfaceName()
+		return daemonipc.Response{OK: false, Error: "direct outbound init: no physical interface"}, connectDetails{}
 	}
-	ensureCorplinkAPIRoute(ctx, cm.Session().Server, physIface, firstNonSystem(cfg.DNS.Upstream))
 
 	nodes, err := cl.ListNodes(ctx)
 	if err != nil {
@@ -679,7 +778,10 @@ func connectVPNOnce(ctx context.Context, cl *corplink.Client, cm *corplink.Manag
 
 	// Add a direct host route for the Corplink API server so daemon HTTP
 	// requests (keep-alive, node listing, etc.) never go through the TUN.
-	ensureCorplinkAPIRoute(ctx, cm.Session().Server, physIface, firstNonSystem(cfg.DNS.Upstream))
+	physIface = prepareCorplinkControlPlane(ctx, cl, cm, cfg)
+	if physIface == "" {
+		return daemonipc.Response{OK: false, Error: "direct outbound init: no physical interface"}, connectDetails{}
+	}
 
 	cc := vpnpkg.ConnectConfig{
 		WG: wgdevice.Config{
@@ -733,18 +835,67 @@ func connectVPNOnce(ctx context.Context, cl *corplink.Client, cm *corplink.Manag
 	}}, connectDetails{node: node, wgInfo: wgInfo, pubB64: pubB64}
 }
 
-func configureCorplinkClientNetwork(cl *corplink.Client, cfg *config.Config) {
-	if cl == nil || cfg == nil {
+func prepareCorplinkControlPlane(ctx context.Context, cl *corplink.Client, cm *corplink.Manager, cfg *config.Config) string {
+	if cm != nil && cm.Session() != nil && isLoopbackServer(cm.Session().Server) {
+		if cl != nil {
+			cl.SetDialContext(nil)
+		}
+		return ""
+	}
+	physIface := configureCorplinkClientNetwork(cl, cfg)
+	if physIface == "" || cfg == nil || cm == nil || cm.Session() == nil {
+		return physIface
+	}
+	ensureControlPlaneRoutes(ctx, cm.Session().Server, physIface, cfg.DNS.Upstream)
+	return physIface
+}
+
+func isLoopbackServer(rawURL string) bool {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return false
+	}
+	host := u.Hostname()
+	if host == "localhost" {
+		return true
+	}
+	ip := net.ParseIP(host)
+	return ip != nil && ip.IsLoopback()
+}
+
+func ensureControlPlaneRoutes(ctx context.Context, apiServer, physIface string, upstream []string) {
+	if physIface == "" {
 		return
+	}
+	for _, upstream := range upstream {
+		host, _, err := net.SplitHostPort(upstream)
+		if err != nil {
+			continue
+		}
+		if net.ParseIP(host) == nil {
+			continue
+		}
+		if rerr := forwarder.AddScopedHostRoute(host, physIface); rerr != nil {
+			log.Printf("[vpn] dns route via %s: %v (continuing)", physIface, rerr)
+		}
+	}
+	ensureCorplinkAPIRoute(ctx, apiServer, physIface, firstNonSystem(upstream))
+}
+
+func configureCorplinkClientNetwork(cl *corplink.Client, cfg *config.Config) string {
+	if cl == nil || cfg == nil {
+		return ""
 	}
 	direct := outbound.NewDirect(cfg.DirectOutbound.Interface, cfg.DNS.Upstream)
 	if err := direct.Init(); err != nil {
 		log.Printf("[corplink] direct API dialer init: %v (using default network)", err)
 		cl.SetDialContext(nil)
-		return
+		return ""
 	}
 	cl.SetDialContext(direct.DialerWithDNS().DialContext)
-	log.Printf("[corplink] API dialer bound to %s", direct.ResolvedIfaceName())
+	iface := direct.ResolvedIfaceName()
+	log.Printf("[corplink] API dialer bound to %s", iface)
+	return iface
 }
 
 func startConnectionLoops(ctx context.Context, gen uint64, cl *corplink.Client, cm *corplink.Manager, vm *vpnpkg.Manager, cfg *config.Config, nodeID int, followSplitRoutes bool, node corplink.VPNNode, vpnIP, pubB64 string) {
@@ -762,6 +913,8 @@ func startConnectionLoops(ctx context.Context, gen uint64, cl *corplink.Client, 
 			if !activeConnection.IsCurrent(gen) || !vm.GetStatus().Connected {
 				return
 			}
+			physIface := prepareCorplinkControlPlane(ctx, cl, cm, cfg)
+			ensureNodeAPIRoute(node, physIface)
 			ctx2, cancel := context.WithTimeout(ctx, 10*time.Second)
 			settings, err := cl.ReportVPN(ctx2, node, vpnIP, pubB64)
 			cancel()
@@ -819,6 +972,7 @@ func startConnectionLoops(ctx context.Context, gen uint64, cl *corplink.Client, 
 			reconnecting = true
 			attempts++
 			log.Printf("[reconnect] tunnel dead, attempt %d/%d", attempts, maxAttempts)
+			prepareCorplinkControlPlane(ctx, cl, cm, cfg)
 			resp, details := connectVPNOnce(ctx, cl, cm, vm, cfg, nodeID, followSplitRoutes)
 			if resp.OK {
 				node = details.node
@@ -833,6 +987,15 @@ func startConnectionLoops(ctx context.Context, gen uint64, cl *corplink.Client, 
 			}
 		}
 	}()
+}
+
+func ensureNodeAPIRoute(node corplink.VPNNode, physIface string) {
+	if physIface == "" || net.ParseIP(node.IP) == nil {
+		return
+	}
+	if err := forwarder.AddScopedHostRoute(node.IP, physIface); err != nil {
+		log.Printf("[vpn] node api route via %s: %v (continuing)", physIface, err)
+	}
 }
 
 type hostResolver interface {

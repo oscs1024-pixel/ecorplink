@@ -3,11 +3,23 @@ set -eu
 
 ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 APP_SRC="${APP_SRC:-}"
+DMG_SRC="${DMG_SRC:-}"
 DAEMON_SRC="$ROOT_DIR/cmd/gui/daemon/ecorplink-daemon"
 DAEMON_DST="$HOME/.ecorplink/bin/ecorplink-daemon"
+PID_FILE="$HOME/.ecorplink/ecorplink.pid"
+SOCKET_PATH="$HOME/.ecorplink/daemon.sock"
+MOUNT_DIR=""
 
 if [ -z "$APP_SRC" ]; then
   APP_SRC="$(find "$ROOT_DIR/build/package" -name ECorpLink.app -type d 2>/dev/null | sort | tail -n 1)"
+fi
+if [ -z "$APP_SRC" ] && [ -z "$DMG_SRC" ]; then
+  DMG_SRC="$(find "$ROOT_DIR/dist" -name 'ECorpLink-*.dmg' -type f 2>/dev/null | sort | tail -n 1)"
+fi
+if [ -z "$APP_SRC" ] && [ -n "$DMG_SRC" ]; then
+  MOUNT_DIR="$(mktemp -d /tmp/ecorplink-dmg.XXXXXX)"
+  hdiutil attach "$DMG_SRC" -mountpoint "$MOUNT_DIR" -nobrowse -readonly >/dev/null
+  APP_SRC="$MOUNT_DIR/ECorpLink.app"
 fi
 if [ ! -d "$APP_SRC" ]; then
   printf 'error: app bundle not found: %s\n' "$APP_SRC" >&2
@@ -18,9 +30,30 @@ if [ ! -x "$DAEMON_SRC" ]; then
   exit 1
 fi
 
+pkill -f '/Applications/ECorpLink.app/Contents/MacOS/ecorplink-gui' >/dev/null 2>&1 || true
+pkill -f '/Applications/Ecorplink.app/Contents/MacOS/ecorplink-gui' >/dev/null 2>&1 || true
+
 if [ -x "$DAEMON_DST" ]; then
   "$DAEMON_DST" stop >/dev/null 2>&1 || true
   sudo -n "$DAEMON_DST" stop >/dev/null 2>&1 || true
+fi
+if [ -S "$SOCKET_PATH" ]; then
+  printf '{"action":"shutdown"}\n' | nc -U "$SOCKET_PATH" >/dev/null 2>&1 || true
+fi
+if [ -f "$PID_FILE" ]; then
+  pid="$(cat "$PID_FILE" 2>/dev/null || true)"
+  case "$pid" in
+    ''|*[!0-9]*) ;;
+    *)
+      kill "$pid" >/dev/null 2>&1 || true
+      sudo -n kill "$pid" >/dev/null 2>&1 || true
+      sleep 1
+      if kill -0 "$pid" >/dev/null 2>&1; then
+        kill -9 "$pid" >/dev/null 2>&1 || true
+        sudo -n kill -9 "$pid" >/dev/null 2>&1 || true
+      fi
+      ;;
+  esac
 fi
 
 mkdir -p "$(dirname "$DAEMON_DST")"
@@ -32,6 +65,10 @@ for app in /Applications/ECorpLink.app /Applications/Ecorplink.app; do
     ditto "$APP_SRC" "$app"
   fi
 done
+
+if [ -n "$MOUNT_DIR" ]; then
+  hdiutil detach "$MOUNT_DIR" >/dev/null || true
+fi
 
 printf 'installed daemon: %s\n' "$DAEMON_DST"
 printf 'installed app bundle from: %s\n' "$APP_SRC"
