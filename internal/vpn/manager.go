@@ -391,7 +391,9 @@ func (m *Manager) startLocked(nodeName string, cc ConnectConfig) error {
 	}
 	// Bind fakeip server's upstream DNS exchange to the physical interface so
 	// non-A queries (HTTPS, MX, TXT, etc.) don't loop back through the TUN.
-	dnsServer.SetDialFn(directOut.Dialer().DialContext)
+	dnsServer.SetDialFn(func(ctx context.Context, network, address string) (net.Conn, error) {
+		return directOut.Dialer().DialContext(ctx, network, address)
+	})
 
 	outs := map[string]*outbound.Direct{"DIRECT": directOut}
 	upstream := firstNonSystem(cfg.DNS.Upstream)

@@ -34,6 +34,10 @@ func addHostRoute(ip, iface string, gateway net.IP) error {
 	if net.ParseIP(ip).To4() == nil {
 		return nil
 	}
+	if routeNeedsReplace(ip, iface, gateway) {
+		deleteHostRoute(ip) //nolint:errcheck
+		forgetHostRoute(ip)
+	}
 	var args []string
 	if gateway != nil && gateway.To4() != nil && !gateway.IsUnspecified() {
 		args = []string{"add", "-host", ip, gateway.String()}
@@ -59,11 +63,30 @@ func deleteHostRoute(ip string) error {
 }
 
 func routeNeedsReplace(ip, iface string, gateway net.IP) bool {
+	current, ok := hostRouteCurrent(ip, iface, gateway)
+	return ok && !current
+}
+
+func hostRouteCurrent(ip, iface string, gateway net.IP) (bool, bool) {
 	out, err := exec.Command("route", "-n", "get", ip).CombinedOutput()
 	if err != nil {
-		return false
+		return false, false
 	}
-	return routeOutputNeedsReplace(out, iface, gateway)
+	return !routeOutputNeedsReplace(out, iface, gateway), true
+}
+
+func scopedHostRouteCurrent(ip, iface string) (bool, bool) {
+	gateway, err := scopedGateway("default", iface)
+	if err != nil {
+		return false, false
+	}
+	if gateway != nil && !gatewayReachableOnInterface(gateway, iface) {
+		gateway = nil
+		if fallback, ferr := defaultGatewayForInterface(iface); ferr == nil && fallback != nil {
+			gateway = fallback
+		}
+	}
+	return hostRouteCurrent(ip, iface, gateway)
 }
 
 func routeOutputNeedsReplace(out []byte, iface string, gateway net.IP) bool {
@@ -156,5 +179,11 @@ func isTunnelInterface(iface string) bool {
 // AddScopedHostRoute adds a /32 host route for ip via iface,
 // bypassing the TUN (used for WireGuard server endpoint).
 func AddScopedHostRoute(ip, iface string) error {
-	return addScopedHostRoute(ip, iface)
+	if err := addScopedHostRoute(ip, iface); err != nil {
+		return err
+	}
+	if parsed := net.ParseIP(ip); parsed != nil {
+		rememberHostRoute(parsed)
+	}
+	return nil
 }

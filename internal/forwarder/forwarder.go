@@ -417,7 +417,10 @@ func (f *Forwarder) ensureHostRoute(ip net.IP, iface string, gateway net.IP) {
 	}
 	key := ip.String()
 	if _, loaded := f.routeCache.Load(key); loaded {
-		return
+		if current, ok := hostRouteCurrent(key, iface, gateway); ok && current {
+			return
+		}
+		f.routeCache.Delete(key)
 	}
 	if err := addHostRoute(key, iface, gateway); err != nil {
 		log.Printf("[warn] host route %s via %s: %v", key, iface, err)
@@ -445,7 +448,10 @@ func (f *Forwarder) ensureScopedHostRoute(ip net.IP, iface string) {
 	}
 	key := ip.String()
 	if _, loaded := f.routeCache.Load(key); loaded {
-		return
+		if current, ok := scopedHostRouteCurrent(key, iface); ok && current {
+			return
+		}
+		f.routeCache.Delete(key)
 	}
 	if err := addScopedHostRoute(key, iface); err != nil {
 		log.Printf("[warn] scoped host route %s via %s: %v", key, iface, err)
